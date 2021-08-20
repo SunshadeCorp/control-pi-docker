@@ -1,0 +1,21 @@
+version: "3"
+services:
+    mosquitto: # https://github.com/docker-library/official-images/blob/master/library/eclipse-mosquitto
+        container_name: mosquitto
+        image: eclipse-mosquitto:2.0.11-openssl
+        ports:
+            - 1883:1883
+            - 9001:9001
+        restart: unless-stopped
+        volumes:
+            - /docker/mosquitto:/mosquitto
+
+    homeassistant: # https://github.com/home-assistant/core/pkgs/container/raspberrypi4-homeassistant/versions
+        container_name: homeassistant
+        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.8.8"
+        network_mode: host
+        privileged: true
+        restart: unless-stopped
+        volumes:
+            - /docker/homeassistant:/config
+            - /etc/localtime:/etc/localtime:ro
