@@ -1,11 +1,15 @@
 version: "3"
 services:
     mosquitto: # https://github.com/docker-library/official-images/blob/master/library/eclipse-mosquitto
+        # command: tail -F anything
         container_name: mosquitto
         image: eclipse-mosquitto:2.0.11-openssl
+        networks:
+            - mosquitto
         ports:
-            - 1883:1883
-            - 9001:9001
+            - 127.0.0.1:1883:1883
+            - 8883:8883
+            - 8884:8884
         restart: unless-stopped
         volumes:
             - /docker/mosquitto:/mosquitto
@@ -18,4 +22,43 @@ services:
         restart: unless-stopped
         volumes:
             - /docker/homeassistant:/config
+            # - /mnt/ssd/homeassistant_data:/data
             - /etc/localtime:/etc/localtime:ro
+
+    modbus4mqtt:
+        build:
+            context: /docker/build/modbus4mqtt
+            # network: host
+        command: --hostname mosquitto --username USER --password PASS --config /modbus4mqtt/sungrow_sh10rt.yaml
+        container_name: modbus4mqtt
+        # dns: 8.8.8.8
+        # image: tjhowse/modbus4mqtt
+        # network_mode: host
+        networks:
+            - mosquitto
+        restart: unless-stopped
+        volumes:
+            - /docker/modbus4mqtt/sungrow_sh10rt.yaml:/modbus4mqtt/sungrow_sh10rt.yaml:ro
+
+    mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
+        container_name: mariadb
+        environment:
+            - "TZ=Europe/Berlin"
+        image: ghcr.io/linuxserver/mariadb:110.4.21mariabionic-ls31
+        ports:
+            - "127.0.0.1:3306:3306"
+        restart: unless-stopped
+        volumes:
+            - /mnt/ssd/mariadb_data:/config
+
+    # solariot:
+    #     container_name: solariot
+    #     image: meltaxa/solariot
+    #     networks:
+    #         - mosquitto
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/solariot:/config
+
+networks:
+    mosquitto:
