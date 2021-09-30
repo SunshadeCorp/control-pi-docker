@@ -1,2 +1,11 @@
+.env
+.idea/
+bind9/cache/
+bind9/log/
+build/
 homeassistant/
-mosquitto/
+mosquitto/config/mosquitto.password_file
+mosquitto/data/
+mosquitto/log/
+mosquitto/ssl/
+solariot/
