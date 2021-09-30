@@ -1,0 +1,178 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+recorder:
+  db_url: !secret recorder_db_url
+  # db_url: sqlite:////data/home-assistant_v2.db
+
+binary_sensor services:
+  - name: Can Service Active
+    payload_off: 'stopped'
+    payload_on: 'running'
+    platform: mqtt
+    state_topic: master/can
+    unique_id: service.can_active
+  - name: Can Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/can/available
+    unique_id: service.can
+  - name: Relay Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/relays/available
+    unique_id: service.relay
+  - name: Master Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/core/available
+    unique_id: service.master
+  - name: Modbus Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: modbus4mqtt/available
+    unique_id: service.modbus
+
+binary_sensor kill_switch:
+  - name: Kill Switch
+    payload_off: 'released'
+    payload_on: 'pressed'
+    platform: mqtt
+    state_topic: master/relays/kill_switch
+    unique_id: relay.kill_switch
+
+switch precharge:
+  - command_topic: master/relays/precharge
+    name: Battery Precharge
+    platform: mqtt
+    state_off: 'off'
+    state_on: 'on'
+    state_topic: master/relays/2
+
+switch relays:
+  - command_topic: master/relays/1/set
+    name: Relay 1 - Battery
+    payload_off: 'off'
+    payload_on: 'on'
+    platform: mqtt
+    state_topic: master/relays/1
+    unique_id: relay.1
+  - command_topic: master/relays/2/set
+    name: Relay 2 - Battery
+    payload_off: 'off'
+    payload_on: 'on'
+    platform: mqtt
+    state_topic: master/relays/2
+    unique_id: relay.2
+  - command_topic: master/relays/3/set
+    name: Relay 3 - Precharge Battery
+    payload_off: 'off'
+    payload_on: 'on'
+    platform: mqtt
+    state_topic: master/relays/3
+    unique_id: relay.3
+  - command_topic: master/relays/4/set
+    name: Relay 4 - Solar 1
+    payload_off: 'off'
+    payload_on: 'on'
+    platform: mqtt
+    state_topic: master/relays/4
+    unique_id: relay.4
+  - command_topic: master/relays/5/set
+    name: Relay 5 - Solar 2
+    payload_off: 'off'
+    payload_on: 'on'
+    platform: mqtt
+    state_topic: master/relays/5
+    unique_id: relay.5
+
+binary_sensor esp-modules:
+  - name: ESP Module 1
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/1/available
+    unique_id: esp-module.1.available
+  - name: ESP Module 2
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/2/available
+    unique_id: esp-module.2.available
+  - name: ESP Module 3
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/3/available
+    unique_id: esp-module.3.available
+  - name: ESP Module 4
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/4/available
+    unique_id: esp-module.4.available
+  - name: ESP Module 5
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/5/available
+    unique_id: esp-module.5.available
+  - name: ESP Module 6
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/6/available
+    unique_id: esp-module.6.available
+  - name: ESP Module 7
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/7/available
+    unique_id: esp-module.7.available
+  - name: ESP Module 8
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/8/available
+    unique_id: esp-module.8.available
+  - name: ESP Module 9
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/9/available
+    unique_id: esp-module.9.available
+  - name: ESP Module 10
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/10/available
+    unique_id: esp-module.10.available
+  - name: ESP Module 11
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/11/available
+    unique_id: esp-module.11.available
+  - name: ESP Module 12
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: esp-module/12/available
+    unique_id: esp-module.12.available
+
+binary_sensor modbus4mqtt: !include modbus4mqtt_binary_sensor.yaml
+sensor modbus4mqtt: !include modbus4mqtt_sensor.yaml

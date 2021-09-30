@@ -3,7 +3,10 @@
 bind9/cache/
 bind9/log/
 build/
-homeassistant/
+homeassistant/*
+!homeassistant/configuration.yaml
+!homeassistant/modbus4mqtt_binary_sensor.yaml
+!homeassistant/modbus4mqtt_sensor.yaml
 mosquitto/config/mosquitto.password_file
 mosquitto/data/
 mosquitto/log/
