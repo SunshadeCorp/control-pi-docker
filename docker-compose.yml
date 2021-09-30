@@ -3,11 +3,12 @@ services:
     mosquitto: # https://github.com/docker-library/official-images/blob/master/library/eclipse-mosquitto
         # command: tail -F anything
         container_name: mosquitto
-        image: eclipse-mosquitto:2.0.11-openssl
+        image: eclipse-mosquitto:2.0.12-openssl # 2.0.11-openssl
         networks:
             - mosquitto
         ports:
-            - 127.0.0.1:1883:1883
+            # - 127.0.0.1:1883:1883
+            - 1883:1883
             - 8883:8883
             - 8884:8884
         restart: unless-stopped
@@ -16,7 +17,10 @@ services:
 
     homeassistant: # https://github.com/home-assistant/core/pkgs/container/raspberrypi4-homeassistant/versions
         container_name: homeassistant
-        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.8.8"
+        depends_on:
+            - mariadb
+            - mosquitto
+        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.9.7" # 2021.9.5 2021.8.8
         network_mode: host
         privileged: true
         restart: unless-stopped
@@ -27,10 +31,12 @@ services:
 
     modbus4mqtt:
         build:
-            context: /docker/build/modbus4mqtt
+            context: /docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
             # network: host
-        command: --hostname mosquitto --username USER --password PASS --config /modbus4mqtt/sungrow_sh10rt.yaml
+        command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
         container_name: modbus4mqtt
+        depends_on:
+            - mosquitto
         # dns: 8.8.8.8
         # image: tjhowse/modbus4mqtt
         # network_mode: host
@@ -43,13 +49,38 @@ services:
     mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
         container_name: mariadb
         environment:
-            - "TZ=Europe/Berlin"
-        image: ghcr.io/linuxserver/mariadb:110.4.21mariabionic-ls31
+            - TZ=Europe/Berlin
+            # - MYSQL_ROOT_PASSWORD
+            # - MYSQL_DATABASE
+            # - MYSQL_USER
+            # - MYSQL_PASSWORD
+        image: ghcr.io/linuxserver/mariadb:version-10.5.12-r0 # 110.4.21mariabionic-ls31
         ports:
             - "127.0.0.1:3306:3306"
         restart: unless-stopped
         volumes:
             - /mnt/ssd/mariadb_data:/config
+
+    relay-service:
+        build:
+            context: /docker/build/relay-service
+        container_name: relay-service
+        depends_on:
+            - mosquitto
+        networks:
+            - mosquitto
+        privileged: true
+        restart: unless-stopped
+
+    can-service:
+        build:
+            context: /docker/build/can-service
+        container_name: can-service
+        depends_on:
+            - mosquitto
+        networks:
+            - mosquitto
+        restart: unless-stopped
 
     # solariot:
     #     container_name: solariot
@@ -59,6 +90,31 @@ services:
     #     restart: unless-stopped
     #     volumes:
     #         - /docker/solariot:/config
+
+     dhcpd:
+        build:
+            context: /docker/build/docker-dhcpd # https://github.com/networkboot/docker-dhcpd
+        container_name: dhcpd
+        environment:
+            - "TZ=Europe/Berlin"
+        network_mode: host
+        restart: unless-stopped
+        volumes:
+            - /docker/dhcpd:/data
+
+     bind9:
+        container_name: bind9
+        image: internetsystemsconsortium/bind9:9.11
+        ports:
+            - "53:53/udp"
+            - "53:53/tcp"
+            - "127.0.0.1:953:953/tcp"
+        restart: unless-stopped
+        volumes:
+            - /docker/bind9/etc:/etc/bind
+            - /docker/bind9/cache:/var/cache/bind
+            - /docker/bind9/lib:/var/lib/bind
+            - /docker/bind9/log:/var/log
 
 networks:
     mosquitto:
