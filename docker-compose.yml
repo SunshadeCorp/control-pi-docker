@@ -78,6 +78,15 @@ services:
         container_name: can-service
         depends_on:
             - mosquitto
+        network_mode: host
+        restart: unless-stopped
+
+    easybms-master:
+        build:
+            context: /docker/build/easybms-master
+        container_name: easybms-master
+        depends_on:
+            - mosquitto
         networks:
             - mosquitto
         restart: unless-stopped
@@ -91,30 +100,30 @@ services:
     #     volumes:
     #         - /docker/solariot:/config
 
-     dhcpd:
-        build:
-            context: /docker/build/docker-dhcpd # https://github.com/networkboot/docker-dhcpd
-        container_name: dhcpd
-        environment:
-            - "TZ=Europe/Berlin"
-        network_mode: host
-        restart: unless-stopped
-        volumes:
-            - /docker/dhcpd:/data
+    #  dhcpd:
+    #     build:
+    #         context: /docker/build/docker-dhcpd # https://github.com/networkboot/docker-dhcpd
+    #     container_name: dhcpd
+    #     environment:
+    #         - "TZ=Europe/Berlin"
+    #     network_mode: host
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/dhcpd:/data
 
-     bind9:
-        container_name: bind9
-        image: internetsystemsconsortium/bind9:9.11
-        ports:
-            - "53:53/udp"
-            - "53:53/tcp"
-            - "127.0.0.1:953:953/tcp"
-        restart: unless-stopped
-        volumes:
-            - /docker/bind9/etc:/etc/bind
-            - /docker/bind9/cache:/var/cache/bind
-            - /docker/bind9/lib:/var/lib/bind
-            - /docker/bind9/log:/var/log
+    #  bind9:
+    #     container_name: bind9
+    #     image: internetsystemsconsortium/bind9:9.11
+    #     ports:
+    #         - "53:53/udp"
+    #         - "53:53/tcp"
+    #         - "127.0.0.1:953:953/tcp"
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/bind9/etc:/etc/bind
+    #         - /docker/bind9/cache:/var/cache/bind
+    #         - /docker/bind9/lib:/var/lib/bind
+    #         - /docker/bind9/log:/var/log
 
 networks:
     mosquitto:

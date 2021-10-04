@@ -56,7 +56,7 @@ binary_sensor kill_switch:
     unique_id: relay.kill_switch
 
 switch precharge:
-  - command_topic: master/relays/precharge
+  - command_topic: master/relays/perform_precharge
     name: Battery Precharge
     platform: mqtt
     state_off: 'off'
