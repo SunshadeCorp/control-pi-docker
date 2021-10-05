@@ -2,55 +2,47 @@
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_pv_power
   unique_id: sungrow.running_state_pv_power
-  value_template: '{{ value_json.running_state_pv_power }}'
 - name: running_state_battery_charging
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_battery_charging
   unique_id: sungrow.running_state_battery_charging
-  value_template: '{{ value_json.running_state_battery_charging }}'
 - name: running_state_battery_discharging
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_battery_discharging
   unique_id: sungrow.running_state_battery_discharging
-  value_template: '{{ value_json.running_state_battery_discharging }}'
 - name: running_state_positive_load_power
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_positive_load_power
   unique_id: sungrow.running_state_positive_load_power
-  value_template: '{{ value_json.running_state_positive_load_power }}'
 - name: running_state_feed_in_power
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_feed_in_power
   unique_id: sungrow.running_state_feed_in_power
-  value_template: '{{ value_json.running_state_feed_in_power }}'
 - name: running_state_import_power_from_grid
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_import_power_from_grid
   unique_id: sungrow.running_state_import_power_from_grid
-  value_template: '{{ value_json.running_state_import_power_from_grid }}'
 - name: running_state_reserved
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_reserved
   unique_id: sungrow.running_state_reserved
-  value_template: '{{ value_json.running_state_reserved }}'
 - name: running_state_negative_load_power
   payload_off: 0
   payload_on: 1
   platform: mqtt
-  state_topic: modbus4mqtt/solar
+  state_topic: modbus4mqtt/running_state_negative_load_power
   unique_id: sungrow.running_state_negative_load_power
-  value_template: '{{ value_json.running_state_negative_load_power }}'
