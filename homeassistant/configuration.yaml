@@ -63,116 +63,116 @@ switch precharge:
     state_on: 'on'
     state_topic: master/relays/2
 
-switch relays:
-  - command_topic: master/relays/1/set
-    name: Relay 1 - Battery
-    payload_off: 'off'
-    payload_on: 'on'
+sensor master:
+  - device_class: power
+    name: master_battery_power
     platform: mqtt
-    state_topic: master/relays/1
-    unique_id: relay.1
-  - command_topic: master/relays/2/set
-    name: Relay 2 - Battery
-    payload_off: 'off'
-    payload_on: 'on'
-    platform: mqtt
-    state_topic: master/relays/2
-    unique_id: relay.2
-  - command_topic: master/relays/3/set
-    name: Relay 3 - Precharge Battery
-    payload_off: 'off'
-    payload_on: 'on'
-    platform: mqtt
-    state_topic: master/relays/3
-    unique_id: relay.3
-  - command_topic: master/relays/4/set
-    name: Relay 4 - Solar 1
-    payload_off: 'off'
-    payload_on: 'on'
-    platform: mqtt
-    state_topic: master/relays/4
-    unique_id: relay.4
-  - command_topic: master/relays/5/set
-    name: Relay 5 - Solar 2
-    payload_off: 'off'
-    payload_on: 'on'
-    platform: mqtt
-    state_topic: master/relays/5
-    unique_id: relay.5
+    state_topic: master/core/system_power
+    unique_id: master_battery_power
+    unit_of_measurement: W
 
-binary_sensor esp-modules:
-  - name: ESP Module 1
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/1/available
-    unique_id: esp-module.1.available
-  - name: ESP Module 2
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/2/available
-    unique_id: esp-module.2.available
-  - name: ESP Module 3
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/3/available
-    unique_id: esp-module.3.available
-  - name: ESP Module 4
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/4/available
-    unique_id: esp-module.4.available
-  - name: ESP Module 5
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/5/available
-    unique_id: esp-module.5.available
-  - name: ESP Module 6
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/6/available
-    unique_id: esp-module.6.available
-  - name: ESP Module 7
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/7/available
-    unique_id: esp-module.7.available
-  - name: ESP Module 8
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/8/available
-    unique_id: esp-module.8.available
-  - name: ESP Module 9
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/9/available
-    unique_id: esp-module.9.available
-  - name: ESP Module 10
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/10/available
-    unique_id: esp-module.10.available
-  - name: ESP Module 11
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/11/available
-    unique_id: esp-module.11.available
-  - name: ESP Module 12
-    payload_off: 'offline'
-    payload_on: 'online'
-    platform: mqtt
-    state_topic: esp-module/12/available
-    unique_id: esp-module.12.available
+switch relays: !include mqtt_relay_switches.yaml
+
+binary_sensor esp-modules: !include mqtt_esp_modules.yaml
 
 binary_sensor modbus4mqtt: !include modbus4mqtt_binary_sensor.yaml
 sensor modbus4mqtt: !include modbus4mqtt_sensor.yaml
+
+template:
+  - sensor:
+    - name: "Tesla Card Grid Consumption"
+      unique_id: 'tesla_card_grid_consumption'
+      state: "{{ states('sensor.sungrow_export_power') | int | min(0) | abs }}"
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid Feed In"
+      unique_id: 'tesla_card_grid_feed_in'
+      state: "{{ states('sensor.sungrow_export_power') | int | max(0) }}"
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery Consumption"
+      unique_id: 'tesla_card_battery_consumption'
+      state: >
+        {% if is_state('binary_sensor.running_state_battery_discharging', 'on') %}
+          {{ states('sensor.sungrow_battery_power') | int }}
+        {% else %}
+          0
+        {% endif %}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery Charging Power"
+      unique_id: 'tesla_card_battery_charging_power'
+      state: >
+        {% if is_state('binary_sensor.running_state_battery_charging', 'on') %}
+          {{ states('sensor.sungrow_battery_power') | int }}
+        {% else %}
+          0
+        {% endif %}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid To House"
+      unique_id: 'tesla_card_grid_to_house'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_total_active_power') | int | min(0) | abs )
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid To Battery"
+      unique_id: 'tesla_card_grid_to_battery'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_load_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To Grid"
+      unique_id: 'tesla_card_generation_to_grid'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To Battery"
+      unique_id: 'tesla_card_generation_to_battery'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To House"
+      unique_id: 'tesla_card_generation_to_house'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery To House"
+      unique_id: 'tesla_card_battery_to_house'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery To Grid"
+      unique_id: 'tesla_card_battery_to_grid'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.sungrow_load_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W

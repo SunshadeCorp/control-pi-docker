@@ -13,7 +13,10 @@ services:
             - 8884:8884
         restart: unless-stopped
         volumes:
-            - /docker/mosquitto:/mosquitto
+            - /docker/mosquitto/config:/mosquitto/config
+            - /docker/mosquitto/ssl:/mosquitto/ssl
+            - /mnt/ssd/mosquitto/data:/mosquitto/data
+            - /mnt/ssd/mosquitto/log:/mosquitto/log
 
     homeassistant: # https://github.com/home-assistant/core/pkgs/container/raspberrypi4-homeassistant/versions
         container_name: homeassistant
