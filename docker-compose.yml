@@ -116,7 +116,7 @@ services:
 
     bind9:
         build:
-            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker
+            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
         container_name: bind9
         ports:
             - "53:53/udp"

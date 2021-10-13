@@ -15,6 +15,63 @@ recorder:
   db_url: !secret recorder_db_url
   # db_url: sqlite:////data/home-assistant_v2.db
 
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_api_key
+    allowed_chat_ids: !secret telegram_allowed_chat_ids
+    parse_mode: html
+
+notify:
+  - platform: telegram
+    name: telegram_chat
+    chat_id: !secret telegram_chat_id
+
+automation telegram:
+  - alias: "relay change"
+    trigger:
+      - platform: state
+        entity_id: switch.battery_precharge
+      - platform: state
+        entity_id: switch.relay_1_battery
+      - platform: state
+        entity_id: switch.relay_2_battery
+      - platform: state
+        entity_id: switch.relay_3_precharge_battery
+      - platform: state
+        entity_id: switch.relay_4_solar_1
+      - platform: state
+        entity_id: switch.relay_5_solar_2
+      - platform: state
+        entity_id: binary_sensor.kill_switch
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            <b><u>{{ trigger.to_state.name }}</u></b> is now <b><u>{{ trigger.to_state.state }}</u></b>
+  - alias: 'system status'
+    trigger:
+      platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/status"
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            MPPT1 Power: {{ states('sensor.mppt1_power') }} W
+            
+            Battery SOC: {{ states('sensor.sungrow_battery_level') }} %
+            
+            Battery Power: {{ states('sensor.sungrow_battery_power') }} W
+
+            Load Power: {{ states('sensor.sungrow_load_power') }} W
+
+            Active Power: {{ states('sensor.sungrow_total_active_power') }} W
+
+            Export Power: {{ states('sensor.sungrow_export_power') }} W
+
+            PV Today: {{ states('sensor.sungrow_daily_pv_generation') }} kWh
+
 binary_sensor services:
   - name: Can Service Active
     payload_off: 'stopped'
@@ -62,6 +119,7 @@ switch precharge:
     state_off: 'off'
     state_on: 'on'
     state_topic: master/relays/2
+    unique_id: relay.battery_precharge
 
 sensor master:
   - device_class: power
@@ -136,7 +194,7 @@ template:
       unique_id: 'tesla_card_generation_to_grid'
       state: >
         {{ (
-          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int)
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int)
         ) | max(0) }}
       device_class: power
       unit_of_measurement: W
@@ -145,7 +203,7 @@ template:
       unique_id: 'tesla_card_generation_to_battery'
       state: >
         {{ (
-          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
         ) | max(0) }}
       device_class: power
       unit_of_measurement: W
@@ -154,7 +212,7 @@ template:
       unique_id: 'tesla_card_generation_to_house'
       state: >
         {{ (
-          (states('sensor.sungrow_total_pv_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
         ) | max(0) }}
       device_class: power
       unit_of_measurement: W
@@ -174,5 +232,12 @@ template:
         {{ (
           (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.sungrow_load_power') | int)
         ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: MPPT1 Power
+      unique_id: mppt1_power
+      state: >
+        {{ (states('sensor.sungrow_mppt1_current') | float) * (states('sensor.sungrow_mppt1_voltage') | float) | round }}
       device_class: power
       unit_of_measurement: W
