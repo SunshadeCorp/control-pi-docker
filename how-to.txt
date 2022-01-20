@@ -1,0 +1,8 @@
+# How to generate a public private key pair
+https://www.ssh.com/academy/ssh/keygen
+
+# How to mount usb sticks or an ssd on raspberry pi
+https://jankarres.de/2013/01/raspberry-pi-usb-stick-und-usb-festplatte-einbinden/
+
+# How to install docker on raspberry pi
+https://dev.to/elalemanyo/how-to-install-docker-and-docker-compose-on-raspberry-pi-1mo
