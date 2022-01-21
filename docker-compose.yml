@@ -47,7 +47,7 @@ services:
             - mosquitto
         restart: unless-stopped
         volumes:
-            - ./modbus4mqtt/sungrow_sh10rt.yaml:/modbus4mqtt/sungrow_sh10rt.yaml:ro
+            - /docker/modbus4mqtt/sungrow_sh10rt.yaml:/modbus4mqtt/sungrow_sh10rt.yaml:ro
 
     mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
         container_name: mariadb
