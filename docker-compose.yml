@@ -13,8 +13,8 @@ services:
             - 8884:8884
         restart: unless-stopped
         volumes:
-            - ./mosquitto/config:/mosquitto/config
-            - ./mosquitto/ssl:/mosquitto/ssl
+            - /docker/mosquitto/config:/mosquitto/config
+            - /docker/mosquitto/ssl:/mosquitto/ssl
             - /mnt/ssd/mosquitto/data:/mosquitto/data
             - /mnt/ssd/mosquitto/log:/mosquitto/log
 
@@ -28,13 +28,13 @@ services:
         privileged: true
         restart: unless-stopped
         volumes:
-            - ./homeassistant:/config
+            - /docker/homeassistant:/config
             # - /mnt/ssd/homeassistant_data:/data
             - /etc/localtime:/etc/localtime:ro
 
     modbus4mqtt:
         build:
-            context: /Docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
+            context: /docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
             # network: host
         command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
         container_name: modbus4mqtt
@@ -66,7 +66,7 @@ services:
 
     relay-service:
         build:
-            context: /Docker/build/relay-service
+            context: /docker/build/relay-service
         container_name: relay-service
         depends_on:
             - mosquitto
@@ -77,7 +77,7 @@ services:
 
     can-service:
         build:
-            context: /Docker/build/can-service
+            context: /docker/build/can-service
         container_name: can-service
         depends_on:
             - mosquitto
@@ -86,7 +86,7 @@ services:
 
     easybms-master:
         build:
-            context: /Docker/build/easybms-master
+            context: /docker/build/easybms-master
         container_name: easybms-master
         depends_on:
             - mosquitto
@@ -116,7 +116,7 @@ services:
 
     bind9:
         build:
-            context: /Docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
+            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
         container_name: bind9
         ports:
             - "53:53/udp"
@@ -124,10 +124,10 @@ services:
             - "127.0.0.1:953:953/tcp"
         restart: unless-stopped
         volumes:
-            - ./bind9/etc:/etc/bind
-            - ./bind9/cache:/var/cache/bind
-            - ./bind9/lib:/var/lib/bind
-            - ./bind9/log:/var/log
+            - /docker/bind9/etc:/etc/bind
+            - /docker/bind9/cache:/var/cache/bind
+            - /docker/bind9/lib:/var/lib/bind
+            - /docker/bind9/log:/var/log
 
 networks:
     mosquitto:
