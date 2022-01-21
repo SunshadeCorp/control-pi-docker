@@ -1,3 +1,10 @@
+# How to set up
+1. Clone this repository into /docker/
+2. Install docker. You can use the install script install-docker.sh
+
+
+
+
 # How to generate a public private key pair
 https://www.ssh.com/academy/ssh/keygen
 
