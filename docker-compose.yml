@@ -34,7 +34,7 @@ services:
 
     modbus4mqtt:
         build:
-            context: ./build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
+            context: /Docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
             # network: host
         command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
         container_name: modbus4mqtt
@@ -66,7 +66,7 @@ services:
 
     relay-service:
         build:
-            context: ./build/relay-service
+            context: /Docker/build/relay-service
         container_name: relay-service
         depends_on:
             - mosquitto
@@ -77,7 +77,7 @@ services:
 
     can-service:
         build:
-            context: ./build/can-service
+            context: /Docker/build/can-service
         container_name: can-service
         depends_on:
             - mosquitto
@@ -86,7 +86,7 @@ services:
 
     easybms-master:
         build:
-            context: ./build/easybms-master
+            context: /Docker/build/easybms-master
         container_name: easybms-master
         depends_on:
             - mosquitto
@@ -116,7 +116,7 @@ services:
 
     bind9:
         build:
-            context: ./build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
+            context: /Docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
         container_name: bind9
         ports:
             - "53:53/udp"
