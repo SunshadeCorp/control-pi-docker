@@ -14,3 +14,4 @@ mosquitto/data/
 mosquitto/log/
 mosquitto/ssl/
 solariot/
+credentials.yaml
