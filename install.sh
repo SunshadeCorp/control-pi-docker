@@ -1,3 +1,10 @@
+# Check if the mqtt credentials have been configured
+CREDENTIALS_FILE=/docker/credentials.yaml
+if [ ! -f "$CREDENTIALS_FILE" ]; then
+    echo "$CREDENTIALS_FILE does not exist! Please configure the mqtt credentials by creating the credentials.yaml file before you continue."
+    exit 2
+fi
+
 # Update packages
 sudo apt-get update -y && sudo apt-get upgrade -y
 
@@ -21,3 +28,8 @@ git clone git@github.com:SunshadeCorp/relay-control.git /docker/build/relay-serv
 git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
 git clone git@github.com:SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
 git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/build/bind9-docker
+
+# Copy mqtt credentials configuration file into the service directories
+cp ./credentials.yaml ./build/can-service
+cp ./credentials.yaml ./build/relay-service
+cp ./credentials.yaml ./build/easybms-master
