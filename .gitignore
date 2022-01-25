@@ -4,6 +4,7 @@ bind9/cache/
 bind9/log/
 build/
 homeassistant/*
+!homeassistant/groups.yaml
 !homeassistant/configuration.yaml
 !homeassistant/modbus4mqtt_binary_sensor.yaml
 !homeassistant/modbus4mqtt_sensor.yaml
