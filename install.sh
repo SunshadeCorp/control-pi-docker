@@ -1,20 +1,34 @@
 CREDENTIALS_FILE=/docker/credentials.yaml
 ENV_FILE=/docker/.env
+MOSQ_PW_FILE=/docker/mosquitto/config/mosquitto.password_file
 
-echo "Choose a user name for MQTT:"
-read input_mqtt_user
+while [ -z "$input_mqtt_user" ]; do
+    echo "Choose a user name for MQTT:"
+    read input_mqtt_user
+    if [ -z "$input_mqtt_user" ]; then
+        echo "An empty value is not allowed. Try again."
+    fi
+done
 
-echo "Choose a password for MQTT:"
-read input_mqtt_pw
+while [ -z "$input_mqtt_password" ]; do
+    echo "Choose a password for MQTT:"
+    read input_mqtt_password
+    if [ -z "$input_mqtt_password" ]; then
+        echo "An empty value is not allowed. Try again."
+    fi
+done
+
 
 # Overwrite credentials file if it exists
 if [ -f "$CREDENTIALS_FILE" ]; then
     rm $CREDENTIALS_FILE
+    echo "Replacing ${CREDENTIALS_FILE}."
 fi
 
 # Overwrite .env file if it exists
 if [ -f "$ENV_FILE" ]; then
     rm $ENV_FILE
+    echo "Replacing ${ENV_FILE}."
 fi
 
 echo "MQTT_USER='${input_mqtt_user}'" >> $ENV_FILE
@@ -26,13 +40,13 @@ echo "mqtt_cert_path: 'path/to/cert.pem'" >> $CREDENTIALS_FILE
 
 # Verify that credentials.yaml exists
 if [ ! -f "$CREDENTIALS_FILE" ]; then
-    echo "$CREDENTIALS_FILE does not exist! Could not create credentials file"
+    echo "$CREDENTIALS_FILE does not exist! Could not create credentials file."
     exit 2
 fi
 
 # Verify that .env exists
 if [ ! -f "$ENV_FILE" ]; then
-    echo "$ENV_FILE does not exist! Could not create .env file"
+    echo "$ENV_FILE does not exist! Could not create .env file."
     exit 2
 fi
 
@@ -57,6 +71,9 @@ sudo apt-get install -y python3 python3-pip
 # Install python over pip
 sudo pip3 install docker-compose
 
+# Install mosquitto to be able to use mosquitto_passwd on the host
+sudo apt install -y mosquitto
+
 # Start containers on boot
 sudo systemctl enable docker
 
@@ -71,3 +88,16 @@ git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/bu
 cp -v /docker/credentials.yaml /docker/build/can-service
 cp -v /docker/credentials.yaml /docker/build/relay-service
 cp -v /docker/credentials.yaml /docker/build/easybms-master
+
+# Create slave mapping file
+cp -v /docker/build/easybms-master/slave_mapping.example.yaml /docker/build/easybms-master/slave_mapping.yaml
+
+# Overwrite mosquitto password file if it exists
+if [ -f "$MOSQ_PW_FILE" ]; then
+    rm $MOSQ_PW_FILE
+    echo "Replacing ${MOSQ_PW_FILE}."
+fi
+
+# Create mosquitto password file
+mosquitto_passwd -b -c $MOSQ_PW_FILE $input_mqtt_user $input_mqtt_password && \
+echo "Created ${MOSQ_PW_FILE}."
