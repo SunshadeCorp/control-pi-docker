@@ -20,8 +20,12 @@ while [ -z "$input_mqtt_password" ]; do
     fi
 done
 
-mariadb_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
-echo "Random mariadb password for homeassistant: ${mariadb_password}"
+# Create mariadb credentials
+mariadb_user="homeassistant"
+mariadb_password=$(date +%s | sha256sum | base64 | head -c 10 ; echo)
+mariadb_root_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
+echo "mariadb password for homeassistant: ${mariadb_password}"
+echo "mariadb password for root: ${mariadb_root_password}"
 
 # Overwrite credentials file if it exists
 if [ -f "$CREDENTIALS_FILE" ]; then
@@ -37,6 +41,9 @@ fi
 
 echo "MQTT_USER='${input_mqtt_user}'" >> $ENV_FILE
 echo "MQTT_PASSWORD='${input_mqtt_password}'" >> $ENV_FILE
+echo "ENV_MARIADB_USER='${mariadb_user}'" >> $ENV_FILE
+echo "ENV_MARIADB_PW='${mariadb_password}'" >> $ENV_FILE
+echo "ENV_MARIADB_ROOT_PW='${mariadb_root_password}'" >> $ENV_FILE
 
 echo "username: '${input_mqtt_user}'" >> $CREDENTIALS_FILE
 echo "password: '${input_mqtt_password}'" >> $CREDENTIALS_FILE
@@ -55,8 +62,8 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 # Print confirmation
-echo "Created ${ENV_FILE}:"
-echo "Created ${CREDENTIALS_FILE}:"
+echo "Created ${ENV_FILE}."
+echo "Created ${CREDENTIALS_FILE}."
 
 # Update packages
 sudo apt-get update -y && sudo apt-get upgrade -y
@@ -114,5 +121,5 @@ if [ -f "$HA_SECRETS_FILE" ]; then
 fi
 
 # Add database url to homeassistant configuration
-echo "recorder_db_url: mysql://homeassistant:${mariadb_password}@127.0.0.1/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
-echo "Created ${HA_SECRETS_FILE}"
+echo "recorder_db_url: mysql://${mariadb_user}:${mariadb_password}@127.0.0.1/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
+echo "Created ${HA_SECRETS_FILE}."

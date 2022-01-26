@@ -52,11 +52,11 @@ services:
     mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
         container_name: mariadb
         environment:
-            - TZ=Europe/Berlin
-            # - MYSQL_ROOT_PASSWORD
-            # - MYSQL_DATABASE
-            # - MYSQL_USER
-            # - MYSQL_PASSWORD
+            # MYSQL_DATABASE
+            TZ: Europe/Berlin
+            MYSQL_ROOT_PASSWORD: $ENV_MARIADB_ROOT_PW
+            MYSQL_USER: $ENV_MARIADB_USER
+            MYSQL_PASSWORD: $ENV_MARIADB_PW
         image: ghcr.io/linuxserver/mariadb:version-10.5.12-r0 # 110.4.21mariabionic-ls31
         ports:
             - "127.0.0.1:3306:3306"
