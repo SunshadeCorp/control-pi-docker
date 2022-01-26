@@ -9,6 +9,7 @@ homeassistant/*
 !homeassistant/scenes.yaml
 !homeassistant/scripts.yaml
 !homeassistant/configuration.yaml
+!homeassistant/telegram.yaml
 !homeassistant/modbus4mqtt_binary_sensor.yaml
 !homeassistant/modbus4mqtt_sensor.yaml
 !homeassistant/mqtt_esp_modules.yaml
