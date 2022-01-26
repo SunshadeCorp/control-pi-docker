@@ -10,8 +10,8 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+telegram: !include telegram.yaml
 
-!include telegram.yaml
 
 recorder:
   db_url: !secret recorder_db_url
