@@ -4,7 +4,7 @@ bind9/cache/
 bind9/log/
 build/
 homeassistant/*
-!homeassistan/automations.yaml
+!homeassistant/automations.yaml
 !homeassistant/groups.yaml
 !homeassistant/scenes.yaml
 !homeassistant/scripts.yaml
