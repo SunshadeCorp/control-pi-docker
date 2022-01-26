@@ -1,7 +1,9 @@
 CREDENTIALS_FILE=/docker/credentials.yaml
 ENV_FILE=/docker/.env
 MOSQ_PW_FILE=/docker/mosquitto/config/mosquitto.password_file
+HA_SECRETS_FILE=/docker/homeassistant/secrets.yaml
 
+# Prompt the user for the mqtt credentials
 while [ -z "$input_mqtt_user" ]; do
     echo "Choose a user name for MQTT:"
     read input_mqtt_user
@@ -18,6 +20,8 @@ while [ -z "$input_mqtt_password" ]; do
     fi
 done
 
+mariadb_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
+echo "Random mariadb password for homeassistant: ${mariadb_password}"
 
 # Overwrite credentials file if it exists
 if [ -f "$CREDENTIALS_FILE" ]; then
@@ -50,12 +54,9 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 2
 fi
 
-# Output contents of the created files
+# Print confirmation
 echo "Created ${ENV_FILE}:"
-cat $ENV_FILE
-
 echo "Created ${CREDENTIALS_FILE}:"
-cat $CREDENTIALS_FILE
 
 # Update packages
 sudo apt-get update -y && sudo apt-get upgrade -y
@@ -105,3 +106,13 @@ echo "Created ${MOSQ_PW_FILE}."
 # Remove mosquitto again to stop interfering with docker. Can this be done in a better way?
 stop mosquitto
 apt-get purge --remove mosquitto*
+
+# Overwrite homeassistant secrets file if it exists
+if [ -f "$HA_SECRETS_FILE" ]; then
+    rm $HA_SECRETS_FILE
+    echo "Replacing ${HA_SECRETS_FILE}."
+fi
+
+# Add database url to homeassistant configuration
+echo "recorder_db_url: mysql://homeassistant:${mariadb_password}@127.0.0.1/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
+echo "Created ${HA_SECRETS_FILE}"
