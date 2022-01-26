@@ -101,3 +101,7 @@ fi
 # Create mosquitto password file
 mosquitto_passwd -b -c $MOSQ_PW_FILE $input_mqtt_user $input_mqtt_password && \
 echo "Created ${MOSQ_PW_FILE}."
+
+# Remove mosquitto again to stop interfering with docker. Can this be done in a better way?
+stop mosquitto
+apt-get purge --remove mosquitto*
