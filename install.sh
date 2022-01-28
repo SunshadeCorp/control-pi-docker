@@ -123,3 +123,7 @@ fi
 # Add database url to homeassistant configuration
 echo "recorder_db_url: mysql://${mariadb_user}:${mariadb_password}@127.0.0.1/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
 echo "Created ${HA_SECRETS_FILE}."
+
+# Output credentials for debugging
+echo "Use these credentials for debugging:"
+cat /docker/.env
