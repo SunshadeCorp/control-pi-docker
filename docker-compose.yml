@@ -24,7 +24,10 @@ services:
             - mariadb
             - mosquitto
         image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.9.7" # 2021.9.5 2021.8.8
-        network_mode: host
+        # network_mode: host
+        ports:
+		  - 80:8123
+		  - 8123:8123
         privileged: true
         restart: unless-stopped
         volumes:
