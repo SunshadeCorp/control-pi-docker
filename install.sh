@@ -121,7 +121,9 @@ if [ -f "$HA_SECRETS_FILE" ]; then
 fi
 
 # Add database url to homeassistant configuration
-echo "recorder_db_url: mysql://${mariadb_user}:${mariadb_password}@127.0.0.1/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
+echo "recorder_db_url: mysql://${mariadb_user}:${mariadb_password}@mariadb/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
+echo "mqtt_user: ${input_mqtt_user}" >> ${HA_SECRETS_FILE}
+echo "mqtt_password: ${input_mqtt_password}" >> ${HA_SECRETS_FILE}
 echo "Created ${HA_SECRETS_FILE}."
 
 # Output credentials for debugging

@@ -14,7 +14,7 @@ scene: !include scenes.yaml
 
 mqtt:
   # certificate: "path/to/cert.crt"
-  broker: 172.0.0.1
+  broker: mosquitto
   port: 1883
   username: !secret mqtt_user
   password: !secret mqtt_password

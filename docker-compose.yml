@@ -24,10 +24,11 @@ services:
             - mariadb
             - mosquitto
         image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.9.7" # 2021.9.5 2021.8.8
-        network_mode: host
-        # ports:
-        #     - 80:8123
-        #     - 8123:8123
+        networks:
+            - mosquitto
+        ports:
+            - 80:8123
+            - 8123:8123
         privileged: true
         restart: unless-stopped
         volumes:
@@ -61,8 +62,9 @@ services:
             MYSQL_USER: $ENV_MARIADB_USER
             MYSQL_PASSWORD: $ENV_MARIADB_PW
         image: ghcr.io/linuxserver/mariadb:version-10.5.12-r0 # 110.4.21mariabionic-ls31
+        networks:
+            - mosquitto
         ports:
-            # - "127.0.0.1:3306:3306"
             - 3306:3306
         restart: unless-stopped
         volumes:
