@@ -122,7 +122,6 @@
   unique_id: sungrow.daily_pv_generation
   unit_of_measurement: kWh
 - device_class: energy
-  last_reset_topic: modbus4mqtt/total_pv_generation
   last_reset_value_template: '1970-01-01T00:00:00+00:00'
   name: total_pv_generation
   platform: mqtt
@@ -224,7 +223,6 @@
   unique_id: sungrow.daily_battery_discharge_energy
   unit_of_measurement: kWh
 - device_class: energy
-  last_reset_topic: modbus4mqtt/total_battery_discharge_energy
   last_reset_value_template: '1970-01-01T00:00:00+00:00'
   name: total_battery_discharge_energy
   platform: mqtt
@@ -272,7 +270,6 @@
   unique_id: sungrow.daily_import_energy
   unit_of_measurement: kWh
 - device_class: energy
-  last_reset_topic: modbus4mqtt/total_import_energy
   last_reset_value_template: '1970-01-01T00:00:00+00:00'
   name: total_import_energy
   platform: mqtt
@@ -293,7 +290,6 @@
   unique_id: sungrow.daily_charge_energy
   unit_of_measurement: kWh
 - device_class: energy
-  last_reset_topic: modbus4mqtt/total_charge_energy
   last_reset_value_template: '1970-01-01T00:00:00+00:00'
   name: total_charge_energy
   platform: mqtt
@@ -308,7 +304,6 @@
   unique_id: sungrow.daily_export_energy
   unit_of_measurement: kWh
 - device_class: energy
-  last_reset_topic: modbus4mqtt/total_export_energy
   last_reset_value_template: '1970-01-01T00:00:00+00:00'
   name: total_export_energy
   platform: mqtt
