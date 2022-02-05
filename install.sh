@@ -125,7 +125,7 @@ sudo systemctl enable docker
 
 # Clone project repos
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
-git clone git@github.com:SunshadeCorp/relay-control.git /docker/build/relay-service
+git clone git@github.com:SunshadeCorp/relay-control.git /docker/build/relay-service --branch pv-hornbostel
 git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
 git clone git@github.com:SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
 git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/build/bind9-docker
