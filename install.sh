@@ -1,7 +1,12 @@
+#!/bin/bash
+
 CREDENTIALS_FILE=/docker/credentials.yaml
 ENV_FILE=/docker/.env
 MOSQ_PW_FILE=/docker/mosquitto/config/mosquitto.password_file
 HA_SECRETS_FILE=/docker/homeassistant/secrets.yaml
+FSTAB_FILE=/etc/fstab
+MOUNT_PARTITION=/dev/sda1
+MOUNT_DIR=/mnt/ssd
 
 # Prompt the user for the mqtt credentials
 while [ -z "$input_mqtt_user" ]; do
@@ -64,6 +69,39 @@ fi
 # Print confirmation
 echo "Created ${ENV_FILE}."
 echo "Created ${CREDENTIALS_FILE}."
+
+# Create mount directory
+if [ ! -d "$MOUNT_DIR" ]; then
+    mkdir $MOUNT_DIR
+    echo "Created ${MOUNT_DIR}"
+else
+    echo "${MOUNT_DIR} already exists."
+fi
+
+# Get UUID of mount partition
+uuid_var=$(blkid -s UUID -o value $MOUNT_PARTITION)
+blkid_line=$(blkid -o list -w /dev/null | grep $MOUNT_PARTITION)
+
+# Check if mount partition is an ext4 partition
+if [[ $blkid_line == *"ext4"* ]]; then
+    echo "${MOUNT_PARTITION} is ext4 partition. OK."
+else
+    echo "no ext4 partition found. aborting."
+    exit 1
+fi
+
+# List all:  blkid -o list -w /dev/null
+# Add to fstab if it is not contained already
+if grep -q "$uuid_var" "$FSTAB_FILE"; then
+    echo "${FSTAB_FILE} already has an entry for this partition. Nothing to be done."
+else
+    echo "Created entry in ${FSTAB_FILE}."
+    echo "UUID=${uuid_var} ${MOUNT_DIR} ext4 defaults,nofail 0 0" >> $FSTAB_FILE
+fi
+
+# Mount the device
+mount -a
+echo "Mounted the device."
 
 # Update packages
 sudo apt-get update -y && sudo apt-get upgrade -y
