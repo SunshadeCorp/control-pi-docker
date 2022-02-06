@@ -8,7 +8,7 @@ FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
 
-# Prompt the user for the mqtt credentials
+# Choose MQTT user
 while [ -z "$input_mqtt_user" ]; do
     echo "Choose a user name for MQTT:"
     read input_mqtt_user
@@ -17,6 +17,7 @@ while [ -z "$input_mqtt_user" ]; do
     fi
 done
 
+# Choose MQTT password
 while [ -z "$input_mqtt_password" ]; do
     echo "Choose a password for MQTT:"
     read input_mqtt_password
@@ -27,10 +28,28 @@ done
 
 # Create mariadb credentials
 mariadb_user="homeassistant"
-mariadb_password=$(date +%s | sha256sum | base64 | head -c 10 ; echo)
-mariadb_root_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
-echo "mariadb password for homeassistant: ${mariadb_password}"
-echo "mariadb password for root: ${mariadb_root_password}"
+
+# Choose password for MariaDB user homeassistant
+while [ -z "$mariadb_password" ]; do
+    echo "Choose a password for MariaDB user 'homeassistant':"
+    read mariadb_password
+    if [ -z "$mariadb_password" ]; then
+        echo "An empty value is not allowed. Assigning random value."
+        mariadb_password=$(date +%s | sha256sum | base64 | head -c 10 ; echo)
+        echo "mariadb password for homeassistant: ${mariadb_password}"
+    fi
+done
+
+# Choose password for MariaDB user root
+while [ -z "$mariadb_root_password" ]; do
+    echo "Choose a password for MariaDB user 'root':"
+    read mariadb_root_password
+    if [ -z "$mariadb_root_password" ]; then
+        echo "An empty value is not allowed. Assigning random value."
+        mariadb_root_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
+        echo "mariadb password for root: ${mariadb_root_password}"
+    fi
+done
 
 # Overwrite credentials file if it exists
 if [ -f "$CREDENTIALS_FILE" ]; then
