@@ -34,9 +34,7 @@ while [ -z "$mariadb_password" ]; do
     echo "Choose a password for MariaDB user 'homeassistant':"
     read mariadb_password
     if [ -z "$mariadb_password" ]; then
-        echo "An empty value is not allowed. Assigning random value."
-        mariadb_password=$(date +%s | sha256sum | base64 | head -c 10 ; echo)
-        echo "mariadb password for homeassistant: ${mariadb_password}"
+        echo "An empty value is not allowed. Try again."
     fi
 done
 
@@ -45,9 +43,7 @@ while [ -z "$mariadb_root_password" ]; do
     echo "Choose a password for MariaDB user 'root':"
     read mariadb_root_password
     if [ -z "$mariadb_root_password" ]; then
-        echo "An empty value is not allowed. Assigning random value."
-        mariadb_root_password=$(date +%s | sha256sum | base64 | head -c 12 ; echo)
-        echo "mariadb password for root: ${mariadb_root_password}"
+        echo "An empty value is not allowed. Try again."
     fi
 done
 
@@ -63,6 +59,10 @@ if [ -f "$ENV_FILE" ]; then
     echo "Replacing ${ENV_FILE}."
 fi
 
+# Print confirmation
+echo "Created ${ENV_FILE}."
+echo "Created ${CREDENTIALS_FILE}."
+
 echo "MQTT_USER='${input_mqtt_user}'" >> $ENV_FILE
 echo "MQTT_PASSWORD='${input_mqtt_password}'" >> $ENV_FILE
 echo "ENV_MARIADB_USER='${mariadb_user}'" >> $ENV_FILE
@@ -75,19 +75,15 @@ echo "mqtt_cert_path: 'path/to/cert.pem'" >> $CREDENTIALS_FILE
 
 # Verify that credentials.yaml exists
 if [ ! -f "$CREDENTIALS_FILE" ]; then
-    echo "$CREDENTIALS_FILE does not exist! Could not create credentials file."
+    echo "$CREDENTIALS_FILE does not exist! Aborting."
     exit 2
 fi
 
 # Verify that .env exists
 if [ ! -f "$ENV_FILE" ]; then
-    echo "$ENV_FILE does not exist! Could not create .env file."
+    echo "$ENV_FILE does not exist! Aborting."
     exit 2
 fi
-
-# Print confirmation
-echo "Created ${ENV_FILE}."
-echo "Created ${CREDENTIALS_FILE}."
 
 # Create mount directory
 if [ ! -d "$MOUNT_DIR" ]; then
