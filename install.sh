@@ -114,7 +114,7 @@ sudo apt-get install -y libffi-dev libssl-dev
 sudo apt install -y python3-dev
 sudo apt-get install -y python3 python3-pip
 
-# Install python over pip
+# Install docker-compose over pip
 sudo pip3 install docker-compose
 
 # Install mosquitto to be able to use mosquitto_passwd on the host
