@@ -64,7 +64,7 @@ echo "ENV_MARIADB_PW='${ENV_MARIADB_PW}'" >> $ENV_FILE
 echo "ENV_MARIADB_ROOT_PW='${ENV_MARIADB_ROOT_PW}'" >> $ENV_FILE
 
 echo "username: '${ENV_MQTT_USER}'" >> $CREDENTIALS_FILE
-echo "password: '${ENV_MQTT_PASSWORD}'" >> $CREDENTIALS_FILE
+echo "password: '${ENV_MQTT_PW}'" >> $CREDENTIALS_FILE
 echo "mqtt_cert_path: 'path/to/cert.pem'" >> $CREDENTIALS_FILE
 
 # Verify that credentials.yaml exists
