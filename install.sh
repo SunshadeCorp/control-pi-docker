@@ -14,15 +14,24 @@ if [ -f "$ENV_FILE" ]; then
     source $ENV_FILE
 fi
 
+# Check if root user
 if [[ ! $(whoami) == "root" ]]; then
     echo "You are not root. This script is designed to be executed as root. Try 'sudo su root'. Aborting."
     exit 1
 fi
 
+# Check SSH keys set up
 if [ ! -f ~/.ssh/id_rsa ]; then
     echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
     exit 2
 fi
+
+# Check internet connection
+if ! ping -q -w 1 -c 1 github.com > /dev/null; then
+    echo "Cannot reach github.com. Are you sure you are connected to the internet? Aborting."
+    exit 1
+fi
+
 
 ENV_MQTT_USER="easy-bms"
 
