@@ -8,6 +8,8 @@ FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
 
+source $ENV_FILE
+
 ENV_MQTT_USER="easy-bms"
 
 # Choose MQTT password
