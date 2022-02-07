@@ -8,7 +8,15 @@ FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
 
-source $ENV_FILE
+# Load the previous configuration if it exists
+if [ -f "$ENV_FILE" ]; then
+    source $ENV_FILE
+fi
+
+if [[ ! $(whoami) == "root" ]]; then
+    echo "You are not root. This script is designed to be executed as root. Try 'sudo su root'. Aborting."
+    exit 1
+fi
 
 ENV_MQTT_USER="easy-bms"
 
@@ -82,7 +90,7 @@ fi
 # Create mount directory
 if [ ! -d "$MOUNT_DIR" ]; then
     mkdir $MOUNT_DIR
-    echo "Created ${MOUNT_DIR}"
+    echo "Created ${MOUNT_DIR}."
 else
     echo "${MOUNT_DIR} already exists."
 fi
@@ -95,7 +103,7 @@ blkid_line=$(blkid -o list -w /dev/null | grep $MOUNT_PARTITION)
 if [[ $blkid_line == *"ext4"* ]]; then
     echo "${MOUNT_PARTITION} is ext4 partition. OK."
 else
-    echo "no ext4 partition found. aborting."
+    echo "${MOUNT_PARTITION} does not exist or is not ext4. aborting."
     exit 1
 fi
 
@@ -113,24 +121,24 @@ mount -a
 echo "Mounted the device."
 
 # Update packages
-sudo apt-get update -y && sudo apt-get upgrade -y
+apt-get update -y && apt-get upgrade -y
 
 # Install docker
 curl -sSL https://get.docker.com | sh
 
 # Install python
-sudo apt-get install -y libffi-dev libssl-dev
-sudo apt install -y python3-dev
-sudo apt-get install -y python3 python3-pip
+apt-get install -y libffi-dev libssl-dev
+apt install -y python3-dev
+apt-get install -y python3 python3-pip
 
 # Install docker-compose over pip
-sudo pip3 install docker-compose
+pip3 install docker-compose
 
 # Install mosquitto to be able to use mosquitto_passwd on the host
-sudo apt install -y mosquitto
+apt install -y mosquitto
 
 # Start containers on boot
-sudo systemctl enable docker
+systemctl enable docker
 
 # Clone project repos
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
