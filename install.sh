@@ -7,6 +7,7 @@ HA_SECRETS_FILE=/docker/homeassistant/secrets.yaml
 FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
+MARIADB_DATA_DIR=/mnt/ssd/mariadb_data
 
 # Load the previous configuration if it exists
 if [ -f "$ENV_FILE" ]; then
@@ -16,6 +17,11 @@ fi
 if [[ ! $(whoami) == "root" ]]; then
     echo "You are not root. This script is designed to be executed as root. Try 'sudo su root'. Aborting."
     exit 1
+fi
+
+if [ ! -f ~/.ssh/id_rsa ]; then
+    echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
+    exit 2
 fi
 
 ENV_MQTT_USER="easy-bms"
@@ -103,7 +109,7 @@ blkid_line=$(blkid -o list -w /dev/null | grep $MOUNT_PARTITION)
 if [[ $blkid_line == *"ext4"* ]]; then
     echo "${MOUNT_PARTITION} is ext4 partition. OK."
 else
-    echo "${MOUNT_PARTITION} does not exist or is not ext4. aborting."
+    echo "${MOUNT_PARTITION} does not exist or is not ext4. Aborting."
     exit 1
 fi
 
@@ -119,6 +125,20 @@ fi
 # Mount the device
 mount -a
 echo "Mounted the device."
+
+# Overwrite MariaDB instance on storage device if wanted
+if [ -d $MARIADB_DATA_DIR ]; then
+    while [ -z "$input_reset_db" ]; do
+        echo "There is already a MariaDB database on your storage device. Do you want me to remove it? All data is going to be lost. [yes/no]"
+        read input_reset_db
+        if [[ $input_reset_db == "yes" ]]; then
+            echo "Removing existing MariaDB installation from storage device."
+            rm -rf $MARIADB_DATA_DIR
+        else
+            echo "Using existing MariaDB database on storage device. Make sure your MariaDB credentials are correct."
+        fi
+    done
+fi
 
 # Update packages
 apt-get update -y && apt-get upgrade -y
