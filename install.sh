@@ -8,41 +8,33 @@ FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
 
-# Choose MQTT user
-while [ -z "$input_mqtt_user" ]; do
-    echo "Choose a user name for MQTT:"
-    read input_mqtt_user
-    if [ -z "$input_mqtt_user" ]; then
-        echo "An empty value is not allowed. Try again."
-    fi
-done
+ENV_MQTT_USER="easy-bms"
 
 # Choose MQTT password
-while [ -z "$input_mqtt_password" ]; do
-    echo "Choose a password for MQTT:"
-    read input_mqtt_password
-    if [ -z "$input_mqtt_password" ]; then
+while [ -z "$ENV_MQTT_PW" ]; do
+    echo "Choose a password for MQTT user 'easy-bms':"
+    read ENV_MQTT_PW
+    if [ -z "$ENV_MQTT_PW" ]; then
         echo "An empty value is not allowed. Try again."
     fi
 done
 
-# Create mariadb credentials
-mariadb_user="homeassistant"
+ENV_MARIADB_USER="homeassistant"
 
 # Choose password for MariaDB user homeassistant
-while [ -z "$mariadb_password" ]; do
+while [ -z "$ENV_MARIADB_PW" ]; do
     echo "Choose a password for MariaDB user 'homeassistant':"
-    read mariadb_password
-    if [ -z "$mariadb_password" ]; then
+    read ENV_MARIADB_PW
+    if [ -z "$ENV_MARIADB_PW" ]; then
         echo "An empty value is not allowed. Try again."
     fi
 done
 
 # Choose password for MariaDB user root
-while [ -z "$mariadb_root_password" ]; do
+while [ -z "$ENV_MARIADB_ROOT_PW" ]; do
     echo "Choose a password for MariaDB user 'root':"
-    read mariadb_root_password
-    if [ -z "$mariadb_root_password" ]; then
+    read ENV_MARIADB_ROOT_PW
+    if [ -z "$ENV_MARIADB_ROOT_PW" ]; then
         echo "An empty value is not allowed. Try again."
     fi
 done
@@ -63,14 +55,14 @@ fi
 echo "Created ${ENV_FILE}."
 echo "Created ${CREDENTIALS_FILE}."
 
-echo "MQTT_USER='${input_mqtt_user}'" >> $ENV_FILE
-echo "MQTT_PASSWORD='${input_mqtt_password}'" >> $ENV_FILE
-echo "ENV_MARIADB_USER='${mariadb_user}'" >> $ENV_FILE
-echo "ENV_MARIADB_PW='${mariadb_password}'" >> $ENV_FILE
-echo "ENV_MARIADB_ROOT_PW='${mariadb_root_password}'" >> $ENV_FILE
+echo "ENV_MQTT_USER='${ENV_MQTT_USER}'" >> $ENV_FILE
+echo "ENV_MQTT_PASSWORD='${ENV_MQTT_PW}'" >> $ENV_FILE
+echo "ENV_MARIADB_USER='${ENV_MARIADB_USER}'" >> $ENV_FILE
+echo "ENV_MARIADB_PW='${ENV_MARIADB_PW}'" >> $ENV_FILE
+echo "ENV_MARIADB_ROOT_PW='${ENV_MARIADB_ROOT_PW}'" >> $ENV_FILE
 
-echo "username: '${input_mqtt_user}'" >> $CREDENTIALS_FILE
-echo "password: '${input_mqtt_password}'" >> $CREDENTIALS_FILE
+echo "username: '${ENV_MQTT_USER}'" >> $CREDENTIALS_FILE
+echo "password: '${ENV_MQTT_PASSWORD}'" >> $CREDENTIALS_FILE
 echo "mqtt_cert_path: 'path/to/cert.pem'" >> $CREDENTIALS_FILE
 
 # Verify that credentials.yaml exists
@@ -140,7 +132,7 @@ sudo systemctl enable docker
 
 # Clone project repos
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
-git clone git@github.com:SunshadeCorp/relay-control.git --branch pv-hornbostel /docker/build/relay-service 
+git clone git@github.com:SunshadeCorp/relay-control.git --branch next-gen /docker/build/relay-service 
 git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
 git clone git@github.com:SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
 git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/build/bind9-docker
@@ -160,7 +152,7 @@ if [ -f "$MOSQ_PW_FILE" ]; then
 fi
 
 # Create mosquitto password file
-mosquitto_passwd -b -c $MOSQ_PW_FILE $input_mqtt_user $input_mqtt_password && \
+mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PASSWORD && \
 echo "Created ${MOSQ_PW_FILE}."
 
 # Remove mosquitto again to stop interfering with docker. Can this be done in a better way?
@@ -174,9 +166,9 @@ if [ -f "$HA_SECRETS_FILE" ]; then
 fi
 
 # Create secrets file for home assistant
-echo "recorder_db_url: mysql://${mariadb_user}:${mariadb_password}@mariadb/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
-echo "mqtt_user: ${input_mqtt_user}" >> ${HA_SECRETS_FILE}
-echo "mqtt_password: ${input_mqtt_password}" >> ${HA_SECRETS_FILE}
+echo "recorder_db_url: mysql://${ENV_MARIADB_USER}:${ENV_MARIADB_PW}@mariadb/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
+echo "mqtt_user: ${ENV_MQTT_USER}" >> ${HA_SECRETS_FILE}
+echo "mqtt_password: ${ENV_MQTT_PW}" >> ${HA_SECRETS_FILE}
 echo "Created ${HA_SECRETS_FILE}."
 
 # Output credentials for debugging

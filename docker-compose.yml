@@ -40,7 +40,7 @@ services:
         build:
             context: /docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
             # network: host
-        command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
+        command: --hostname mosquitto --username ${ENV_MQTT_USER} --password ${ENV_MQTT_PW} --config /modbus4mqtt/sungrow_sh10rt.yaml
         container_name: modbus4mqtt
         depends_on:
             - mosquitto
