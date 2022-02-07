@@ -58,7 +58,7 @@ echo "Created ${ENV_FILE}."
 echo "Created ${CREDENTIALS_FILE}."
 
 echo "ENV_MQTT_USER='${ENV_MQTT_USER}'" >> $ENV_FILE
-echo "ENV_MQTT_PASSWORD='${ENV_MQTT_PW}'" >> $ENV_FILE
+echo "ENV_MQTT_PW='${ENV_MQTT_PW}'" >> $ENV_FILE
 echo "ENV_MARIADB_USER='${ENV_MARIADB_USER}'" >> $ENV_FILE
 echo "ENV_MARIADB_PW='${ENV_MARIADB_PW}'" >> $ENV_FILE
 echo "ENV_MARIADB_ROOT_PW='${ENV_MARIADB_ROOT_PW}'" >> $ENV_FILE
@@ -154,7 +154,7 @@ if [ -f "$MOSQ_PW_FILE" ]; then
 fi
 
 # Create mosquitto password file
-mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PASSWORD && \
+mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PW && \
 echo "Created ${MOSQ_PW_FILE}."
 
 # Remove mosquitto again to stop interfering with docker. Can this be done in a better way?
