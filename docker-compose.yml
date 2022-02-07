@@ -100,6 +100,9 @@ services:
             - mosquitto
         restart: unless-stopped
 
+networks:
+    mosquitto:
+
     # solariot:
     #     container_name: solariot
     #     image: meltaxa/solariot
@@ -120,20 +123,17 @@ services:
     #     volumes:
     #         - /docker/dhcpd:/data
 
-    bind9:
-        build:
-            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
-        container_name: bind9
-        ports:
-            - "53:53/udp"
-            - "53:53/tcp"
-            - "127.0.0.1:953:953/tcp"
-        restart: unless-stopped
-        volumes:
-            - /docker/bind9/etc:/etc/bind
-            - /docker/bind9/cache:/var/cache/bind
-            - /docker/bind9/lib:/var/lib/bind
-            - /docker/bind9/log:/var/log
-
-networks:
-    mosquitto:
+    # bind9:
+    #     build:
+    #         context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
+    #     container_name: bind9
+    #     ports:
+    #         - "53:53/udp"
+    #         - "53:53/tcp"
+    #         - "127.0.0.1:953:953/tcp"
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/bind9/etc:/etc/bind
+    #         - /docker/bind9/cache:/var/cache/bind
+    #         - /docker/bind9/lib:/var/lib/bind
+    #         - /docker/bind9/log:/var/log
