@@ -8,6 +8,14 @@ FSTAB_FILE=/etc/fstab
 MOUNT_PARTITION=/dev/sda1
 MOUNT_DIR=/mnt/ssd
 MARIADB_DATA_DIR=/mnt/ssd/mariadb_data
+TARGET_DIR=/docker
+
+# Check if the location of the clone is correct
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+if [[ ! $SCRIPT_DIR == $TARGET_DIR ]]; then
+    echo "You are trying to install in ${SCRIPT_DIR}. This script is designed to install in ${TARGET_DIR}. Aborting."
+    exit 1
+fi
 
 # Load the previous configuration if it exists
 if [ -f "$ENV_FILE" ]; then
