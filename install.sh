@@ -212,10 +212,15 @@ dtoverlay mcp2515-can1 oscillator=16000000 interrupt=25
 dtoverlay mcp2515-can0 oscillator=16000000 interrupt=23
 
 # Enable SPI and CAN on boot
-# TODO: dont do this if already done
-echo "dtparam=spi=on" >> /boot/config.txt
-echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
-echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
+# Dont do this if already done
+if grep -q "dtoverlay=mcp2515-can0" /boot/config.txt; then
+    echo "/boot/config.txt is already configured."
+else
+    echo "Configuring /boot/config.txt for CAN"
+    echo "dtparam=spi=on" >> /boot/config.txt
+    echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
+    echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
+fi
 
 # Setup CAN interfaces
 /bin/bash can-interfaces.sh
