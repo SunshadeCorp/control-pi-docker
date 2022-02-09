@@ -167,6 +167,14 @@ curl -sSL https://get.docker.com | sh
 apt-get install -y libffi-dev libssl-dev
 apt install -y python3-dev
 apt-get install -y python3 python3-pip
+apt-get install python3-pil
+
+# Some Tools for CAN testing
+apt-get install python3-numpy
+pip3 install RPi.GPIO
+pip3 install spidev 
+pip3 install python-can
+apt-get install can-utils
 
 # Install docker-compose over pip
 pip3 install docker-compose
@@ -176,6 +184,37 @@ apt install -y mosquitto
 
 # Start containers on boot
 systemctl enable docker
+
+# Install BCM2835
+wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
+tar zxvf bcm2835-1.60.tar.gz 
+cd bcm2835-1.60/
+./configure
+make
+make check
+make install
+cd ..
+rm -f bcm2835-1.60.tar.gz
+rm -rf bcm2835-1.60/
+# For More：http://www.airspayce.com/mikem/bcm2835/
+
+# Install wiringpi
+apt-get install wiringpi
+wget https://project-downloads.drogon.net/wiringpi-latest.deb
+dpkg -i wiringpi-latest.deb
+gpio -v # If the version 2.52 is displayed, the installation is successful
+
+# Enable SPI and CAN
+# https://www.waveshare.com/wiki/2-CH_CAN_HAT
+echo "dtparam=spi=on" >> /boot/config.txt
+echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
+echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
+
+dtparam spi=on
+dtoverlay mcp2515-can1 oscillator=16000000 interrupt=25
+dtoverlay mcp2515-can0 oscillator=16000000 interrupt=23
+
+/bin/bash can-interfaces.sh
 
 # Clone project repos
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
@@ -221,8 +260,8 @@ echo "Created ${HA_SECRETS_FILE}."
 # Create startup service for setting up the can interfaces
 cp /docker/can-interfaces.service /lib/systemd/system/can-interfaces.service
 chmod 644 /lib/systemd/system/can-interfaces.service
-sudo systemctl daemon-reload
-sudo systemctl enable can-interfaces.service
+systemctl daemon-reload
+systemctl enable can-interfaces.service
 
 # Output credentials for debugging
 echo "Use these credentials for debugging:"
