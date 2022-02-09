@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/bin/bash /docker/setup-can-interfaces.sh
+ExecStart=/bin/bash /docker/can-interfaces.sh > /docker/can-interfaces.log 2>&1
 
 [Install]
 WantedBy=multi-user.target
