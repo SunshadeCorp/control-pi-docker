@@ -210,11 +210,19 @@ echo "dtparam=spi=on" >> /boot/config.txt
 echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
 echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
 
+# TODO: dont do this if already done
 dtparam spi=on
 dtoverlay mcp2515-can1 oscillator=16000000 interrupt=25
 dtoverlay mcp2515-can0 oscillator=16000000 interrupt=23
 
+# Setup CAN interfaces
 /bin/bash can-interfaces.sh
+
+# Create startup service for setting up the CAN interfaces on boot
+cp /docker/can-interfaces.service /lib/systemd/system/can-interfaces.service
+chmod 644 /lib/systemd/system/can-interfaces.service
+systemctl daemon-reload
+systemctl enable can-interfaces.service
 
 # Clone project repos
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
@@ -256,12 +264,6 @@ echo "recorder_db_url: mysql://${ENV_MARIADB_USER}:${ENV_MARIADB_PW}@mariadb/hom
 echo "mqtt_user: ${ENV_MQTT_USER}" >> ${HA_SECRETS_FILE}
 echo "mqtt_password: ${ENV_MQTT_PW}" >> ${HA_SECRETS_FILE}
 echo "Created ${HA_SECRETS_FILE}."
-
-# Create startup service for setting up the can interfaces
-cp /docker/can-interfaces.service /lib/systemd/system/can-interfaces.service
-chmod 644 /lib/systemd/system/can-interfaces.service
-systemctl daemon-reload
-systemctl enable can-interfaces.service
 
 # Output credentials for debugging
 echo "Use these credentials for debugging:"
