@@ -1,0 +1,10 @@
+[Unit]
+Description=Setup CAN Interfaces Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/bin/bash /docker/setup-can-interfaces.sh
+
+[Install]
+WantedBy=multi-user.target
