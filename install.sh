@@ -218,6 +218,12 @@ echo "mqtt_user: ${ENV_MQTT_USER}" >> ${HA_SECRETS_FILE}
 echo "mqtt_password: ${ENV_MQTT_PW}" >> ${HA_SECRETS_FILE}
 echo "Created ${HA_SECRETS_FILE}."
 
+# Create startup service for setting up the can interfaces
+cp /docker/can-interfaces.service /lib/systemd/system/can-interfaces.service
+chmod 644 /lib/systemd/system/can-interfaces.service
+sudo systemctl daemon-reload
+sudo systemctl enable can-interfaces.service
+
 # Output credentials for debugging
 echo "Use these credentials for debugging:"
 cat /docker/.env
