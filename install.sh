@@ -53,22 +53,21 @@ done
 
 ENV_MARIADB_USER="homeassistant"
 
-# TODO: This password needs to be at least 4 characters
 # Choose password for MariaDB user homeassistant
-while [ -z "$ENV_MARIADB_PW" ]; do
-    echo "Choose a password for MariaDB user 'homeassistant':"
+while [ "${#ENV_MARIADB_PW}" -lt 4 ]; do
+    echo "Choose a password for MariaDB user 'homeassistant' (>= 4 characters):"
     read ENV_MARIADB_PW
-    if [ -z "$ENV_MARIADB_PW" ]; then
-        echo "An empty value is not allowed. Try again."
+    if [ ${#ENV_MARIADB_PW} -lt 4 ]; then
+        echo "It has to be at least 4 characters. Try again."
     fi
 done
 
 # Choose password for MariaDB user root
-while [ -z "$ENV_MARIADB_ROOT_PW" ]; do
-    echo "Choose a password for MariaDB user 'root':"
+while [ "${#ENV_MARIADB_ROOT_PW}" -lt 4 ]; do
+    echo "Choose a password for MariaDB user 'root' (>= 4 characters):"
     read ENV_MARIADB_ROOT_PW
-    if [ -z "$ENV_MARIADB_ROOT_PW" ]; then
-        echo "An empty value is not allowed. Try again."
+    if [ ${#ENV_MARIADB_ROOT_PW} -lt 4 ]; then
+        echo "It has to be at least 4 characters. Try again."
     fi
 done
 
