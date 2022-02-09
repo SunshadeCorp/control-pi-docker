@@ -83,10 +83,7 @@ if [ -f "$ENV_FILE" ]; then
     echo "Replacing ${ENV_FILE}."
 fi
 
-# Print confirmation
-echo "Created ${ENV_FILE}."
-echo "Created ${CREDENTIALS_FILE}."
-
+# Create config files for credentials
 echo "ENV_MQTT_USER='${ENV_MQTT_USER}'" >> $ENV_FILE
 echo "ENV_MQTT_PW='${ENV_MQTT_PW}'" >> $ENV_FILE
 echo "ENV_MARIADB_USER='${ENV_MARIADB_USER}'" >> $ENV_FILE
@@ -108,6 +105,10 @@ if [ ! -f "$ENV_FILE" ]; then
     echo "$ENV_FILE does not exist! Aborting."
     exit 2
 fi
+
+# Print confirmation
+echo "Created ${ENV_FILE}."
+echo "Created ${CREDENTIALS_FILE}."
 
 # Create mount directory
 if [ ! -d "$MOUNT_DIR" ]; then
