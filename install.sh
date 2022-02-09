@@ -40,7 +40,6 @@ if ! ping -q -w 1 -c 1 github.com > /dev/null; then
     exit 1
 fi
 
-
 ENV_MQTT_USER="easy-bms"
 
 # Choose MQTT password
@@ -54,6 +53,7 @@ done
 
 ENV_MARIADB_USER="homeassistant"
 
+# TODO: This password needs to be at least 4 characters
 # Choose password for MariaDB user homeassistant
 while [ -z "$ENV_MARIADB_PW" ]; do
     echo "Choose a password for MariaDB user 'homeassistant':"
@@ -203,6 +203,7 @@ apt-get install wiringpi
 wget https://project-downloads.drogon.net/wiringpi-latest.deb
 dpkg -i wiringpi-latest.deb
 gpio -v # If the version 2.52 is displayed, the installation is successful
+rm wiringpi-latest.deb
 
 # Enable SPI and CAN
 # https://www.waveshare.com/wiki/2-CH_CAN_HAT
