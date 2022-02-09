@@ -206,14 +206,15 @@ gpio -v # If the version 2.52 is displayed, the installation is successful
 
 # Enable SPI and CAN
 # https://www.waveshare.com/wiki/2-CH_CAN_HAT
-echo "dtparam=spi=on" >> /boot/config.txt
-echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
-echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
-
-# TODO: dont do this if already done
 dtparam spi=on
 dtoverlay mcp2515-can1 oscillator=16000000 interrupt=25
 dtoverlay mcp2515-can0 oscillator=16000000 interrupt=23
+
+# Enable SPI and CAN on boot
+# TODO: dont do this if already done
+echo "dtparam=spi=on" >> /boot/config.txt
+echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
+echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
 
 # Setup CAN interfaces
 /bin/bash can-interfaces.sh
