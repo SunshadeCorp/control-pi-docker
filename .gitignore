@@ -21,3 +21,4 @@ mosquitto/ssl/
 solariot/
 credentials.yaml
 ~$stallation-manual.docx
+can-interfaces.log
