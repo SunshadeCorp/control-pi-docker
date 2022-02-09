@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # https://www.waveshare.com/wiki/2-CH_CAN_HAT
 
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
@@ -7,11 +9,12 @@ sudo ./configure
 sudo make
 sudo make check
 sudo make install
+cd ..
 # For More：http://www.airspayce.com/mikem/bcm2835/
 
 # Remove build files
 rm -f bcm2835-1.60.tar.gz
-rm -r bcm2835-1.60/
+rm -rf bcm2835-1.60/
 
 sudo apt-get install wiringpi
 #When used on Raspberry Pi 4B, you may need to upgrade first：
@@ -41,4 +44,9 @@ echo "dtparam=spi=on" >> /boot/config.txt
 echo "dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=25" >> /boot/config.txt
 echo "dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23" >> /boot/config.txt
 
+dtparam spi=on
+dtoverlay mcp2515-can1 oscillator=16000000 interrupt=25
+dtoverlay mcp2515-can0 oscillator=16000000 interrupt=23
+
 sudo apt-get install can-utils
+/bin/bash can-interfaces.sh
