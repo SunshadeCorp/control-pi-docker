@@ -185,6 +185,10 @@ apt install -y mosquitto
 # Start containers on boot
 systemctl enable docker
 
+# Install requirements for kiosk mode
+apt-get install chomium-browser
+apt-get install unclutter
+
 # Install BCM2835
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
 tar zxvf bcm2835-1.60.tar.gz 
@@ -232,6 +236,7 @@ systemctl daemon-reload
 systemctl enable can-interfaces.service
 
 # Clone project repos
+git config pull.rebase false
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
 git clone git@github.com:SunshadeCorp/relay-control.git --branch next-gen /docker/build/relay-service 
 git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
