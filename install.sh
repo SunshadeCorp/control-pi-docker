@@ -239,6 +239,12 @@ chmod 644 /lib/systemd/system/can-interfaces.service
 systemctl daemon-reload
 systemctl enable can-interfaces.service
 
+# Create service to open homeassistant in chromium on boot
+cp /docker/kioskapp.service /lib/systemd/system/kioskapp.service
+chmod 644 /lib/systemd/system/kioskapp.service
+systemctl daemon-reload
+systemctl enable kioskapp.service
+
 # Clone project repos
 git config pull.rebase false
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
