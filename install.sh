@@ -277,7 +277,7 @@ mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PW && \
 echo "Created ${MOSQ_PW_FILE}."
 
 # Remove mosquitto again to stop interfering with docker. Can this be done in a better way?
-# stop mosquitto
+systemctl stop mosquitto
 apt-get purge -y --remove mosquitto*
 
 # Overwrite homeassistant secrets file if it exists

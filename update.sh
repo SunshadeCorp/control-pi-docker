@@ -12,3 +12,4 @@ cd /docker
 ./install.sh --keep-db
 docker-compose build
 docker-compose up -d --force-recreate
+systemctl start kioskapp
