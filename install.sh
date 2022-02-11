@@ -253,7 +253,12 @@ cp -v /docker/credentials.yaml /docker/build/relay-service
 cp -v /docker/credentials.yaml /docker/build/easybms-master
 
 # Create slave mapping file
-cp -v /docker/build/easybms-master/slave_mapping.example.yaml /docker/build/easybms-master/slave_mapping.yaml
+if [ ! -f /docker/build/easybms-master/slave_mapping.yaml ]; then
+    cp -v /docker/build/easybms-master/slave_mapping.example.yaml /docker/build/easybms-master/slave_mapping.yaml
+    echo "Created /docker/build/easybms-master/slave_mapping.yaml."
+else
+    echo "/docker/build/easybms-master/slave_mapping.yaml already exists."
+fi
 
 # Overwrite mosquitto password file if it exists
 if [ -f "$MOSQ_PW_FILE" ]; then
