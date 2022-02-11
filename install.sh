@@ -10,6 +10,10 @@ MOUNT_DIR=/mnt/ssd
 MARIADB_DATA_DIR=/mnt/ssd/mariadb_data
 TARGET_DIR=/docker
 
+command_exists() {
+    command -v "$@" > /dev/null 2>&1
+}
+
 # Check if the location of the clone is correct
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 if [[ ! $SCRIPT_DIR == $TARGET_DIR ]]; then
@@ -165,7 +169,11 @@ fi
 apt-get update -y && apt-get upgrade -y
 
 # Install docker
-curl -sSL https://get.docker.com | sh
+if command_exists docker; then
+    echo "Docker is already installed. OK"
+else
+    curl -sSL https://get.docker.com | sh
+fi
 
 # Install python
 apt-get install -y libffi-dev libssl-dev
