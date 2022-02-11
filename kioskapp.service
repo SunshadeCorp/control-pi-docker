@@ -4,7 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/bin/bash /docker/kioskapp.sh > /docker/kioskapp.log 2>&1
+ExecStart=/docker/kioskapp.sh > /docker/kioskapp.log 2>&1
+KillMode=control-group
 
 [Install]
 WantedBy=multi-user.target

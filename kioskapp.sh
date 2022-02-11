@@ -4,4 +4,4 @@
 USER=$(id -nu 1000)
 
 # Run chromium as normal user
-runuser -l $USER -c "chromium-browser --display=:0 --kiosk --app=http://localhost:80/"
+sudo -u $USER chromium-browser --display=:0 --kiosk --app=http://localhost:80/
