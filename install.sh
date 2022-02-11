@@ -179,14 +179,14 @@ fi
 apt-get install -y libffi-dev libssl-dev
 apt install -y python3-dev
 apt-get install -y python3 python3-pip
-apt-get install python3-pil
+apt-get install -y python3-pil
 
 # Some Tools for CAN testing
-apt-get install python3-numpy
+apt-get install -y python3-numpy
 pip3 install RPi.GPIO
 pip3 install spidev 
 pip3 install python-can
-apt-get install can-utils
+apt-get install -y can-utils
 
 # Install docker-compose over pip
 pip3 install docker-compose
@@ -198,8 +198,8 @@ apt install -y mosquitto
 systemctl enable docker
 
 # Install requirements for kiosk mode
-apt-get install chomium-browser
-apt-get install unclutter
+apt-get install -y chomium-browser
+apt-get install -y unclutter
 
 # Install BCM2835
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
@@ -215,7 +215,7 @@ rm -rf bcm2835-1.60/
 # For More：http://www.airspayce.com/mikem/bcm2835/
 
 # Install wiringpi
-apt-get install wiringpi
+apt-get install -y wiringpi
 wget https://project-downloads.drogon.net/wiringpi-latest.deb
 dpkg -i wiringpi-latest.deb
 gpio -v # If the version 2.52 is displayed, the installation is successful
