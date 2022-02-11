@@ -23,7 +23,7 @@ services:
         depends_on:
             - mariadb
             - mosquitto
-        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:stable" # 2021.9.7
+        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2022.2.5" # 2021.9.7
         networks:
             - mosquitto
         ports:
