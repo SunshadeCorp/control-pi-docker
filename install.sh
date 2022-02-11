@@ -231,13 +231,13 @@ else
 fi
 
 # Setup CAN interfaces
-/bin/bash can-interfaces.sh
-
 # Create startup service for setting up the CAN interfaces on boot
 cp /docker/can-interfaces.service /lib/systemd/system/can-interfaces.service
 chmod 644 /lib/systemd/system/can-interfaces.service
 systemctl daemon-reload
 systemctl enable can-interfaces.service
+systemctl start can-interfaces
+# /bin/bash can-interfaces.sh
 
 # Create service to open homeassistant in chromium on boot
 cp /docker/kioskapp.service /lib/systemd/system/kioskapp.service
