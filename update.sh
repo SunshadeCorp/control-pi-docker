@@ -1,7 +1,7 @@
 #!/bin/bash
 
-docker-compose down
 systemctl stop kioskapp
+docker-compose down
 git pull
 cd /docker/build/easybms-master && git pull
 cd /docker/build/can-service && git pull
