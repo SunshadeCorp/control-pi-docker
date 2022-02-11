@@ -145,16 +145,20 @@ echo "Mounted the device."
 
 # Overwrite MariaDB instance on storage device if wanted
 if [ -d $MARIADB_DATA_DIR ]; then
-    while [ -z "$input_reset_db" ]; do
-        echo "There is already a MariaDB database on your storage device. Do you want me to remove it? All data is going to be lost. [yes/no]"
-        read input_reset_db
-        if [[ $input_reset_db == "yes" ]]; then
-            echo "Removing existing MariaDB installation from storage device."
-            rm -rf $MARIADB_DATA_DIR
-        else
-            echo "Using existing MariaDB database on storage device. Make sure your MariaDB credentials are correct."
-        fi
-    done
+    if [[ $@ == *"--keep-db"* ]]; then
+        echo "--keep-db: Keeping existing MariaDB database."
+    else
+        while [ -z "$input_reset_db" ]; do
+            echo "There is already a MariaDB database on your storage device. Do you want me to remove it? All data is going to be lost. [yes/no]"
+            read input_reset_db
+            if [[ $input_reset_db == "yes" ]]; then
+                echo "Removing existing MariaDB installation from storage device."
+                rm -rf $MARIADB_DATA_DIR
+            else
+                echo "Using existing MariaDB database on storage device. Make sure your MariaDB credentials are correct."
+            fi
+        done
+    fi
 fi
 
 # Update packages

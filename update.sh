@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker-compose down
 git pull
 cd /docker/build/easybms-master && git pull
