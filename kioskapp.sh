@@ -10,4 +10,4 @@ done
 sleep 2s
 
 # Run Chromium as normal user
-sudo -u $USER chromium-browser --display=:0 --kiosk --app=http://localhost:80/
+sudo -u $USER chromium-browser --display=:0 --kiosk http://localhost:80/
