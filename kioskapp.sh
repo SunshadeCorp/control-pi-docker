@@ -7,7 +7,6 @@ USER=$(id -nu 1000)
 until </dev/tcp/localhost/80; do 
     sleep 1s
 done
-sleep 2s
 
 # Run Chromium as normal user
 sudo -u $USER chromium-browser --display=:0 --kiosk http://localhost:80/
