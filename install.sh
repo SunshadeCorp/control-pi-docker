@@ -202,17 +202,21 @@ apt-get install -y chomium-browser
 apt-get install -y unclutter
 
 # Install BCM2835
-wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
-tar zxvf bcm2835-1.60.tar.gz 
-cd bcm2835-1.60/
-./configure
-make
-make check
-make install
-cd ..
-rm -f bcm2835-1.60.tar.gz
-rm -rf bcm2835-1.60/
-# For More：http://www.airspayce.com/mikem/bcm2835/
+if [ -f /usr/local/include/bcm2835.h ]; then
+    echo "BCMS2835 library is already installed. OK."
+else
+    wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
+    tar zxvf bcm2835-1.60.tar.gz 
+    cd bcm2835-1.60/
+    ./configure
+    make
+    make check
+    make install
+    cd ..
+    rm -f bcm2835-1.60.tar.gz
+    rm -rf bcm2835-1.60/
+    # For More：http://www.airspayce.com/mikem/bcm2835/
+fi
 
 # Install wiringpi
 apt-get install -y wiringpi
