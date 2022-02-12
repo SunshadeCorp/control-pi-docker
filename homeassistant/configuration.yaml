@@ -95,13 +95,17 @@ template:
   - sensor:
     - name: "Tesla Card Grid Consumption"
       unique_id: 'tesla_card_grid_consumption'
-      state: "{{ states('sensor.sungrow_export_power') | [int(default=0), 0] | min | abs }}"
+      state: >
+        {% set export_power = int(states('sensor.sungrow_export_power'), 0) %}
+        {{ -export_power if export_power < 0 else 0 }}"
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Grid Feed In"
       unique_id: 'tesla_card_grid_feed_in'
-      state: "{{ states('sensor.sungrow_export_power') | int(default=0) | max(0) }}"
+      state: > 
+        {% set var = int(states('sensor.sungrow_export_power'), 0) %}
+        {{ var if var > 0 else 0 }}"
       device_class: power
       unit_of_measurement: W
 
@@ -130,69 +134,81 @@ template:
     - name: "Tesla Card Grid To House"
       unique_id: 'tesla_card_grid_to_house'
       state: >
-        {{ (
-          (states('sensor.tesla_card_grid_consumption') | int(default=0)) - (states('sensor.sungrow_total_active_power') | int(default=0) | min(0) | abs )
-        ) | max(0) }}
+        {% set grid_consumption = int(states('sensor.tesla_card_grid_consumption'), 0) %}
+        {% set active_power = int(states('sensor.sungrow_total_active_power'), 0) %}
+        {% set grid_to_house = grid_consumption - active_power %}
+        {{ -grid_to_house if grid_to_house < 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Grid To Battery"
       unique_id: 'tesla_card_grid_to_battery'
       state: >
-        {{ (
-          (states('sensor.tesla_card_grid_consumption') | int(default=0)) - (states('sensor.sungrow_load_power') | int(default=0))
-        ) | max(0) }}
+         {% set grid_consumption = int(states('sensor.tesla_card_grid_consumption'), 0) %}
+         {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+         {% set grid_to_battery =  grid_consumption - load_power %}
+         {{ grid_to_battery if grid_to_battery > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To Grid"
       unique_id: 'tesla_card_generation_to_grid'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int(default=0)) - (states('sensor.sungrow_load_power') | int(default=0)) - (states('sensor.tesla_card_battery_charging_power') | int(default=0))
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set battery_charging_power = int(states('sensor.tesla_card_battery_charging_power'), 0) %}
+        {% set generation_to_grid = total_dc_power - load_power - battery_charging_power %}
+        {{ generation_to_grid if generation_to_grid > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To Battery"
       unique_id: 'tesla_card_generation_to_battery'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int(default=0)) - (states('sensor.sungrow_load_power') | int(default=0)) - (states('sensor.tesla_card_grid_feed_in') | int(default=0))
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set generation_to_battery = total_dc_power - load_power - grid_feed_in %}
+        {{ generation_to_battery if generation_to_battery > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To House"
       unique_id: 'tesla_card_generation_to_house'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int(default=0)) - (states('sensor.tesla_card_battery_charging_power') | int(default=0)) - (states('sensor.tesla_card_grid_feed_in') | int(default=0))
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set battery_charging_power = int(states('sensor.tesla_card_battery_charging_power'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set generation_to_house = total_dc_power - battery_charging_power - grid_feed_in %}
+        {{ generation_to_house if generation_to_house > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Battery To House"
       unique_id: 'tesla_card_battery_to_house'
       state: >
-        {{ (
-          (states('sensor.tesla_card_battery_consumption') | int(default=0)) - (states('sensor.tesla_card_grid_feed_in') | int(default=0))
-        ) | max(0) }}
+        {% set battery_consumption = int(states('sensor.tesla_card_battery_consumption'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set battery_to_house = battery_consumption - grid_feed_in %}
+        {{ battery_to_house if battery_to_house > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Battery To Grid"
       unique_id: 'tesla_card_battery_to_grid'
       state: >
-        {{ (
-          (states('sensor.tesla_card_battery_consumption') | int(default=0)) - (states('sensor.sungrow_load_power') | int(default=0))
-        ) | max(0) }}
+        {% set battery_consumption = int(states('sensor.tesla_card_battery_consumption'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set battery_to_grid = battery_consumption - load_power %}
+        {{ battery_to_grid if battery_to_grid > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: MPPT1 Power
       unique_id: mppt1_power
       state: >
-        {{ (states('sensor.sungrow_mppt1_current') | float(default=0.0)) * (states('sensor.sungrow_mppt1_voltage') | float(default=0.0)) | round }}
+        {% set mppt1_current = float(states('sensor.sungrow_mppt1_current'), 0.0) %}
+        {% set mppt1_voltage = float(states('sensor.sungrow_mppt1_voltage'), 0.0) %}
+        {{ mppt1_current * mppt1_voltage | float(default=0.0) | round }}
       device_class: power
       unit_of_measurement: W
