@@ -4,7 +4,7 @@
 USER=$(id -nu 1000)
 
 # Wait until Homeassistant is ready. Is there a better way to do this?
-until </dev/tcp/localhost/80; do 
+until </dev/tcp/localhost/80; do
     sleep 1s
 done
 sleep 5s
