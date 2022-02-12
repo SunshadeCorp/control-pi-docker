@@ -95,7 +95,7 @@ template:
   - sensor:
     - name: "Tesla Card Grid Consumption"
       unique_id: 'tesla_card_grid_consumption'
-      state: "{{ states('sensor.sungrow_export_power') | int(default=0) | min(0) | abs }}"
+      state: "{{ states('sensor.sungrow_export_power') | [int(default=0), 0] | min | abs }}"
       device_class: power
       unit_of_measurement: W
 
