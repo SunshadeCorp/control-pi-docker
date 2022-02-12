@@ -216,10 +216,6 @@ rm -rf bcm2835-1.60/
 
 # Install wiringpi
 apt-get install -y wiringpi
-wget https://project-downloads.drogon.net/wiringpi-latest.deb
-dpkg -i wiringpi-latest.deb
-gpio -v # If the version 2.52 is displayed, the installation is successful
-rm wiringpi-latest.deb
 
 # Enable SPI and CAN
 # https://www.waveshare.com/wiki/2-CH_CAN_HAT
