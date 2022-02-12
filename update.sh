@@ -1,7 +1,9 @@
 #!/bin/bash
 
+echo "Shutting down kioskapp."
 systemctl stop kioskapp
 docker-compose down
+rm -rf /docker/homeassistant/.storage
 git pull
 cd /docker/build/easybms-master && git pull
 cd /docker/build/can-service && git pull
@@ -13,3 +15,4 @@ cd /docker
 docker-compose build
 docker-compose up -d --force-recreate
 systemctl start kioskapp
+echo "Started kioskapp."
