@@ -198,7 +198,7 @@ apt install -y mosquitto
 systemctl enable docker
 
 # Install requirements for kiosk mode
-apt-get install -y chomium-browser
+apt-get install -y chromium-browser
 apt-get install -y unclutter
 
 # Install BCM2835
