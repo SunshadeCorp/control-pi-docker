@@ -7,7 +7,8 @@ USER=$(id -nu 1000)
 until </dev/tcp/localhost/80; do
     sleep 1s
 done
-sleep 5s
+
+sleep 15s
 
 # Run Chromium as normal user
-sudo -u $USER chromium-browser --display=:0 --kiosk http://localhost:80/
+sudo -u $USER chromium-browser --no-touch-pinch --display=:0 --kiosk --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter http://localhost:80/
