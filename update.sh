@@ -2,8 +2,7 @@
 
 echo "Shutting down kioskapp."
 systemctl stop kioskapp
-docker-compose down
-rm -rf /docker/homeassistant/.storage
+docker-compose dow´n
 git pull
 cd /docker/build/easybms-master && git pull
 cd /docker/build/can-service && git pull
