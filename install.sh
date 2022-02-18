@@ -294,6 +294,11 @@ if [ -f "$HA_SECRETS_FILE" ]; then
     echo "Replacing ${HA_SECRETS_FILE}."
 fi
 
+# Create baseline storage folder for homeassistant
+if [ -d /docker/homeassistant/.storage ]; then
+    cp -rv storage-template homeassistant/.storage
+fi
+
 # Create secrets file for home assistant
 echo "recorder_db_url: mysql://${ENV_MARIADB_USER}:${ENV_MARIADB_PW}@mariadb/homeassistant?charset=utf8mb4" >> ${HA_SECRETS_FILE}
 echo "mqtt_user: ${ENV_MQTT_USER}" >> ${HA_SECRETS_FILE}
