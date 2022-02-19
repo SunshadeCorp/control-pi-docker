@@ -295,7 +295,7 @@ if [ -f "$HA_SECRETS_FILE" ]; then
 fi
 
 # Create baseline storage folder for homeassistant
-if [ -d /docker/homeassistant/.storage ]; then
+if [ ! -d /docker/homeassistant/.storage ]; then
     cp -rv storage-template homeassistant/.storage
 fi
 
