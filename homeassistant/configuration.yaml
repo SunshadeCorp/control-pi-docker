@@ -4,12 +4,12 @@
 # https://github.com/home-assistant/core/blob/dev/homeassistant/components/default_config/manifest.json
 
 # Replicate default_config to disable some of the integrations
-automation:
+#automation: (listed below)
 cloud:
 counter:
 dhcp:
 energy:
-frontend:
+#frontend: (listed below)
 history:
 input_boolean:
 input_button:
@@ -18,14 +18,14 @@ input_number:
 input_select:
 input_text:
 logbook:
-#map:
-#media_source:
+#map: (not needed)
+#media_source: (not needed)
 mobile_app:
 my:
 network:
 person:
-scene:
-script:
+#scene: (listed below)
+#script: (listed below)
 ssdp:
 sun:
 system_health:
