@@ -11,4 +11,4 @@ done
 sleep 15s
 
 # Run Chromium as normal user
-sudo -u $USER chromium-browser --no-touch-pinch --display=:0 --kiosk --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter http://localhost:80/
+sudo -u $USER chromium-browser --disable-pinch --display=:0 --kiosk --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter http://localhost:80/
