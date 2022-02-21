@@ -256,9 +256,9 @@ systemctl enable kioskapp.service
 # Clone project repos
 git config pull.rebase false
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
-git clone git@github.com:SunshadeCorp/relay-control.git --branch next-gen /docker/build/relay-service 
-git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
-git clone git@github.com:SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
+git clone https://github.com/SunshadeCorp/relay-service.git --branch next-gen /docker/build/relay-service 
+git clone https://github.com/SunshadeCorp/can-service.git /docker/build/can-service
+git clone https://github.com/SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
 git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/build/bind9-docker
 
 # Copy mqtt credentials configuration file into the service directories
