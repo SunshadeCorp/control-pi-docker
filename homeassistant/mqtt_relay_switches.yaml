@@ -1,0 +1,35 @@
+- command_topic: master/relays/1/set
+  name: Relay 1 - Battery Plus
+  payload_off: 'off'
+  payload_on: 'on'
+  platform: mqtt
+  state_topic: master/relays/1
+  unique_id: relay.1
+- command_topic: master/relays/2/set
+  name: Relay 2 - Battery Minus
+  payload_off: 'off'
+  payload_on: 'on'
+  platform: mqtt
+  state_topic: master/relays/2
+  unique_id: relay.2
+- command_topic: master/relays/3/set
+  name: Relay 3 - Precharge Battery
+  payload_off: 'off'
+  payload_on: 'on'
+  platform: mqtt
+  state_topic: master/relays/3
+  unique_id: relay.3
+- command_topic: master/relays/4/set
+  name: Relay 4 - Solar String 1
+  payload_off: 'off'
+  payload_on: 'on'
+  platform: mqtt
+  state_topic: master/relays/4
+  unique_id: relay.4
+- command_topic: master/relays/5/set
+  name: Relay 5 - Solar String 2
+  payload_off: 'off'
+  payload_on: 'on'
+  platform: mqtt
+  state_topic: master/relays/5
+  unique_id: relay.5
