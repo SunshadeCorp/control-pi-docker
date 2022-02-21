@@ -15,6 +15,7 @@ homeassistant/*
 !homeassistant/modbus4mqtt_sensor.yaml
 !homeassistant/mqtt_esp_modules.yaml
 !homeassistant/mqtt_relay_switches.yaml
+!homeassistant/storage-template
 mosquitto/config/mosquitto.password_file
 mosquitto/data/
 mosquitto/log/

@@ -296,7 +296,7 @@ fi
 
 # Create baseline storage folder for homeassistant
 if [ ! -d /docker/homeassistant/.storage ]; then
-    cp -rv storage-template homeassistant/.storage
+    cp -rv /docker/homeassistant/storage-template /docker/homeassistant/.storage
 fi
 
 # Create secrets file for home assistant
