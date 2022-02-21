@@ -1,0 +1,243 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+recorder:
+  db_url: !secret recorder_db_url
+  # db_url: sqlite:////data/home-assistant_v2.db
+
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_api_key
+    allowed_chat_ids: !secret telegram_allowed_chat_ids
+    parse_mode: html
+
+notify:
+  - platform: telegram
+    name: telegram_chat
+    chat_id: !secret telegram_chat_id
+
+automation telegram:
+  - alias: "relay change"
+    trigger:
+      - platform: state
+        entity_id: switch.battery_precharge
+      - platform: state
+        entity_id: switch.relay_1_battery
+      - platform: state
+        entity_id: switch.relay_2_battery
+      - platform: state
+        entity_id: switch.relay_3_precharge_battery
+      - platform: state
+        entity_id: switch.relay_4_solar_1
+      - platform: state
+        entity_id: switch.relay_5_solar_2
+      - platform: state
+        entity_id: binary_sensor.kill_switch
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            <b><u>{{ trigger.to_state.name }}</u></b> is now <b><u>{{ trigger.to_state.state }}</u></b>
+  - alias: 'system status'
+    trigger:
+      platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/status"
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            MPPT1 Power: {{ states('sensor.mppt1_power') }} W
+            
+            Battery SOC: {{ states('sensor.sungrow_battery_level') }} %
+            
+            Battery Power: {{ states('sensor.sungrow_battery_power') }} W
+
+            Load Power: {{ states('sensor.sungrow_load_power') }} W
+
+            Active Power: {{ states('sensor.sungrow_total_active_power') }} W
+
+            Export Power: {{ states('sensor.sungrow_export_power') }} W
+
+            PV Today: {{ states('sensor.sungrow_daily_pv_generation') }} kWh
+
+binary_sensor services:
+  - name: Can Service Active
+    payload_off: 'stopped'
+    payload_on: 'running'
+    platform: mqtt
+    state_topic: master/can
+    unique_id: service.can_active
+  - name: Can Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/can/available
+    unique_id: service.can
+  - name: Relay Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/relays/available
+    unique_id: service.relay
+  - name: Master Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: master/core/available
+    unique_id: service.master
+  - name: Modbus Service
+    payload_off: 'offline'
+    payload_on: 'online'
+    platform: mqtt
+    state_topic: modbus4mqtt/available
+    unique_id: service.modbus
+
+binary_sensor kill_switch:
+  - name: Kill Switch
+    payload_off: 'released'
+    payload_on: 'pressed'
+    platform: mqtt
+    state_topic: master/relays/kill_switch
+    unique_id: relay.kill_switch
+
+switch precharge:
+  - command_topic: master/relays/perform_precharge
+    name: Battery Precharge
+    platform: mqtt
+    state_off: 'off'
+    state_on: 'on'
+    state_topic: master/relays/2
+    unique_id: relay.battery_precharge
+
+sensor master:
+  - device_class: power
+    name: master_battery_power
+    platform: mqtt
+    state_topic: master/core/system_power
+    unique_id: master_battery_power
+    unit_of_measurement: W
+
+switch relays: !include mqtt_relay_switches.yaml
+
+binary_sensor esp-modules: !include mqtt_esp_modules.yaml
+
+binary_sensor modbus4mqtt: !include modbus4mqtt_binary_sensor.yaml
+sensor modbus4mqtt: !include modbus4mqtt_sensor.yaml
+
+template:
+  - sensor:
+    - name: "Tesla Card Grid Consumption"
+      unique_id: 'tesla_card_grid_consumption'
+      state: "{{ states('sensor.sungrow_export_power') | int | min(0) | abs }}"
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid Feed In"
+      unique_id: 'tesla_card_grid_feed_in'
+      state: "{{ states('sensor.sungrow_export_power') | int | max(0) }}"
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery Consumption"
+      unique_id: 'tesla_card_battery_consumption'
+      state: >
+        {% if is_state('binary_sensor.running_state_battery_discharging', 'on') %}
+          {{ states('sensor.sungrow_battery_power') | int }}
+        {% else %}
+          0
+        {% endif %}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery Charging Power"
+      unique_id: 'tesla_card_battery_charging_power'
+      state: >
+        {% if is_state('binary_sensor.running_state_battery_charging', 'on') %}
+          {{ states('sensor.sungrow_battery_power') | int }}
+        {% else %}
+          0
+        {% endif %}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid To House"
+      unique_id: 'tesla_card_grid_to_house'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_total_active_power') | int | min(0) | abs )
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Grid To Battery"
+      unique_id: 'tesla_card_grid_to_battery'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_load_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To Grid"
+      unique_id: 'tesla_card_generation_to_grid'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To Battery"
+      unique_id: 'tesla_card_generation_to_battery'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Generation To House"
+      unique_id: 'tesla_card_generation_to_house'
+      state: >
+        {{ (
+          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery To House"
+      unique_id: 'tesla_card_battery_to_house'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: "Tesla Card Battery To Grid"
+      unique_id: 'tesla_card_battery_to_grid'
+      state: >
+        {{ (
+          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.sungrow_load_power') | int)
+        ) | max(0) }}
+      device_class: power
+      unit_of_measurement: W
+
+    - name: MPPT1 Power
+      unique_id: mppt1_power
+      state: >
+        {{ (states('sensor.sungrow_mppt1_current') | float) * (states('sensor.sungrow_mppt1_voltage') | float) | round }}
+      device_class: power
+      unit_of_measurement: W

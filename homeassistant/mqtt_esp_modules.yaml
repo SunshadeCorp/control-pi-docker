@@ -1,0 +1,72 @@
+- name: ESP Module 1
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/1/available
+  unique_id: esp-module.1.available
+- name: ESP Module 2
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/2/available
+  unique_id: esp-module.2.available
+- name: ESP Module 3
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/3/available
+  unique_id: esp-module.3.available
+- name: ESP Module 4
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/4/available
+  unique_id: esp-module.4.available
+- name: ESP Module 5
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/5/available
+  unique_id: esp-module.5.available
+- name: ESP Module 6
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/6/available
+  unique_id: esp-module.6.available
+- name: ESP Module 7
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/7/available
+  unique_id: esp-module.7.available
+- name: ESP Module 8
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/8/available
+  unique_id: esp-module.8.available
+- name: ESP Module 9
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/9/available
+  unique_id: esp-module.9.available
+- name: ESP Module 10
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/10/available
+  unique_id: esp-module.10.available
+- name: ESP Module 11
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/11/available
+  unique_id: esp-module.11.available
+- name: ESP Module 12
+  payload_off: 'offline'
+  payload_on: 'online'
+  platform: mqtt
+  state_topic: esp-module/12/available
+  unique_id: esp-module.12.available

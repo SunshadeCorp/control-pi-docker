@@ -1,0 +1,133 @@
+version: "3"
+services:
+    mosquitto: # https://github.com/docker-library/official-images/blob/master/library/eclipse-mosquitto
+        # command: tail -F anything
+        container_name: mosquitto
+        image: eclipse-mosquitto:2.0.12-openssl # 2.0.11-openssl
+        networks:
+            - mosquitto
+        ports:
+            # - 127.0.0.1:1883:1883
+            - 1883:1883
+            - 8883:8883
+            - 8884:8884
+        restart: unless-stopped
+        volumes:
+            - /docker/mosquitto/config:/mosquitto/config
+            - /docker/mosquitto/ssl:/mosquitto/ssl
+            - /mnt/ssd/mosquitto/data:/mosquitto/data
+            - /mnt/ssd/mosquitto/log:/mosquitto/log
+
+    homeassistant: # https://github.com/home-assistant/core/pkgs/container/raspberrypi4-homeassistant/versions
+        container_name: homeassistant
+        depends_on:
+            - mariadb
+            - mosquitto
+        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.9.7" # 2021.9.5 2021.8.8
+        network_mode: host
+        privileged: true
+        restart: unless-stopped
+        volumes:
+            - /docker/homeassistant:/config
+            # - /mnt/ssd/homeassistant_data:/data
+            - /etc/localtime:/etc/localtime:ro
+
+    modbus4mqtt:
+        build:
+            context: /docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
+            # network: host
+        command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
+        container_name: modbus4mqtt
+        depends_on:
+            - mosquitto
+        # dns: 8.8.8.8
+        # image: tjhowse/modbus4mqtt
+        # network_mode: host
+        networks:
+            - mosquitto
+        restart: unless-stopped
+        volumes:
+            - /docker/modbus4mqtt/sungrow_sh10rt.yaml:/modbus4mqtt/sungrow_sh10rt.yaml:ro
+
+    mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
+        container_name: mariadb
+        environment:
+            - TZ=Europe/Berlin
+            # - MYSQL_ROOT_PASSWORD
+            # - MYSQL_DATABASE
+            # - MYSQL_USER
+            # - MYSQL_PASSWORD
+        image: ghcr.io/linuxserver/mariadb:version-10.5.12-r0 # 110.4.21mariabionic-ls31
+        ports:
+            - "127.0.0.1:3306:3306"
+        restart: unless-stopped
+        volumes:
+            - /mnt/ssd/mariadb_data:/config
+
+    relay-service:
+        build:
+            context: /docker/build/relay-service
+        container_name: relay-service
+        depends_on:
+            - mosquitto
+        networks:
+            - mosquitto
+        privileged: true
+        restart: unless-stopped
+
+    can-service:
+        build:
+            context: /docker/build/can-service
+        container_name: can-service
+        depends_on:
+            - mosquitto
+        network_mode: host
+        restart: unless-stopped
+
+    easybms-master:
+        build:
+            context: /docker/build/easybms-master
+        container_name: easybms-master
+        depends_on:
+            - mosquitto
+        networks:
+            - mosquitto
+        restart: unless-stopped
+
+    # solariot:
+    #     container_name: solariot
+    #     image: meltaxa/solariot
+    #     networks:
+    #         - mosquitto
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/solariot:/config
+
+    #  dhcpd:
+    #     build:
+    #         context: /docker/build/docker-dhcpd # https://github.com/networkboot/docker-dhcpd
+    #     container_name: dhcpd
+    #     environment:
+    #         - "TZ=Europe/Berlin"
+    #     network_mode: host
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/dhcpd:/data
+
+    bind9:
+        build:
+            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
+        container_name: bind9
+        ports:
+            - "53:53/udp"
+            - "53:53/tcp"
+            - "127.0.0.1:953:953/tcp"
+        restart: unless-stopped
+        volumes:
+            - /docker/bind9/etc:/etc/bind
+            - /docker/bind9/cache:/var/cache/bind
+            - /docker/bind9/lib:/var/lib/bind
+            - /docker/bind9/log:/var/log
+
+networks:
+    mosquitto:
