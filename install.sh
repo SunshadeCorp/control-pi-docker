@@ -33,10 +33,10 @@ if [[ ! $(whoami) == "root" ]]; then
 fi
 
 # Check SSH keys set up
-if [ ! -f ~/.ssh/id_rsa ]; then
-    echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
-    exit 2
-fi
+# if [ ! -f ~/.ssh/id_rsa ]; then
+#     echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
+#     exit 2
+# fi
 
 # Check internet connection
 if ! ping -q -w 1 -c 1 github.com > /dev/null; then
