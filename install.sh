@@ -191,9 +191,6 @@ apt-get install -y can-utils
 # Install docker-compose over pip
 pip3 install docker-compose
 
-# Install mosquitto to be able to use mosquitto_passwd on the host
-apt install -y mosquitto
-
 # Start containers on boot
 systemctl enable docker
 
@@ -279,6 +276,9 @@ if [ -f "$MOSQ_PW_FILE" ]; then
     rm $MOSQ_PW_FILE
     echo "Replacing ${MOSQ_PW_FILE}."
 fi
+
+# Install mosquitto to be able to use mosquitto_passwd on the host
+apt install -y mosquitto
 
 # Create mosquitto password file
 mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PW && \
