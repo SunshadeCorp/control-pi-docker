@@ -198,6 +198,9 @@ systemctl enable docker
 apt-get install -y chromium-browser
 apt-get install -y unclutter
 
+# Install OpenVPN Client
+apt-get install openvpn unzip
+
 # Install BCM2835
 if [ -f /usr/local/include/bcm2835.h ]; then
     echo "BCMS2835 library is already installed. OK."
