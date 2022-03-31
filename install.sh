@@ -199,7 +199,7 @@ apt-get install -y chromium-browser
 apt-get install -y unclutter
 
 # Install OpenVPN Client
-apt-get install openvpn unzip
+apt-get install -y openvpn unzip
 
 # Install BCM2835
 if [ -f /usr/local/include/bcm2835.h ]; then
