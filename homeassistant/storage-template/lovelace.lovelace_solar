@@ -50,7 +50,8 @@
                             "show_icon": false,
                             "show_state": true,
                             "show_name": true,
-                            "state_color": false
+                            "state_color": false,
+                            "columns": 2
                         },
                         {
                             "type": "history-graph",
