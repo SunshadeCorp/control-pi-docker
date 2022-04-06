@@ -87,7 +87,7 @@
                             "show_state": false,
                             "show_icon": true,
                             "show_name": true,
-                            "columns": 4
+                            "columns": 2
                         },
                         {
                             "type": "glance",
@@ -115,6 +115,7 @@
                                 }
                             ],
                             "state_color": true,
+                            "columns": 3,
                             "title": "Batterie"
                         }
                     ]
