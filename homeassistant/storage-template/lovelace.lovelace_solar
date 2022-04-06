@@ -59,6 +59,9 @@
                                     "entity": "sensor.sungrow_mppt1_voltage"
                                 },
                                 {
+                                    "entity": "sensor.sungrow_mppt2_voltage"
+                                },
+                                {
                                     "entity": "sensor.sungrow_battery_voltage"
                                 }
                             ],
