@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "key": "energy",
+    "data": {
+        "energy_sources": [
+            {
+                "type": "grid",
+                "flow_from": [
+                    {
+                        "stat_energy_from": "sensor.sungrow_total_import_energy",
+                        "stat_cost": null,
+                        "entity_energy_from": "sensor.sungrow_total_import_energy",
+                        "entity_energy_price": null,
+                        "number_energy_price": null
+                    }
+                ],
+                "flow_to": [
+                    {
+                        "stat_energy_to": "sensor.sungrow_total_export_energy",
+                        "stat_compensation": null,
+                        "entity_energy_to": "sensor.sungrow_total_export_energy",
+                        "entity_energy_price": null,
+                        "number_energy_price": null
+                    }
+                ],
+                "cost_adjustment_day": 0.0
+            },
+            {
+                "type": "solar",
+                "stat_energy_from": "sensor.sungrow_total_pv_generation",
+                "config_entry_solar_forecast": null
+            },
+            {
+                "type": "battery",
+                "stat_energy_from": "sensor.sungrow_total_battery_discharge_energy",
+                "stat_energy_to": "sensor.sungrow_total_charge_energy"
+            }
+        ],
+        "device_consumption": []
+    }
+}

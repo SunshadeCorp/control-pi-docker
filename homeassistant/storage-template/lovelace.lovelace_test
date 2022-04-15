@@ -1,0 +1,141 @@
+{
+    "version": 1,
+    "key": "lovelace.lovelace_test",
+    "data": {
+        "config": {
+            "views": [
+                {
+                    "title": "Home",
+                    "cards": [
+                        {
+                            "type": "history-graph",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_total_pv_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_load_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_export_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_active_power"
+                                },
+                                {
+                                    "entity": "binary_sensor.running_state_battery_charging"
+                                },
+                                {
+                                    "entity": "binary_sensor.running_state_battery_discharging"
+                                },
+                                {
+                                    "entity": "binary_sensor.running_state_pv_power"
+                                }
+                            ],
+                            "hours_to_show": 12,
+                            "refresh_interval": 0
+                        },
+                        {
+                            "type": "custom:tesla-style-solar-power-card",
+                            "show_w_not_kw": 1,
+                            "grid_to_house_entity": "sensor.tesla_card_grid_to_house",
+                            "grid_to_battery_entity": "sensor.tesla_card_grid_to_battery",
+                            "generation_to_grid_entity": "sensor.tesla_card_generation_to_grid",
+                            "generation_to_battery_entity": "sensor.tesla_card_generation_to_battery",
+                            "generation_to_house_entity": "sensor.tesla_card_generation_to_house",
+                            "battery_to_house_entity": "sensor.tesla_card_battery_to_house",
+                            "battery_to_grid_entity": "sensor.tesla_card_battery_to_grid",
+                            "battery_extra_entity": "sensor.sungrow_battery_level",
+                            "generation_extra_entity": "sensor.sungrow_mppt1_voltage",
+                            "grid_extra_entity": "sensor.sungrow_grid_frequency"
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "sensor.tesla_card_grid_consumption"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_grid_feed_in"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_battery_consumption"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_battery_charging_power"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_grid_to_house"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_grid_to_battery"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_generation_to_grid"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_generation_to_house"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_generation_to_battery"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_battery_to_grid"
+                                },
+                                {
+                                    "entity": "sensor.tesla_card_battery_to_house"
+                                }
+                            ],
+                            "columns": 3
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_total_dc_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_load_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_export_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_active_power"
+                                },
+                                {
+                                    "entity": "sensor.master_battery_power"
+                                }
+                            ],
+                            "columns": 3
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                "sensor.sungrow_mppt1_voltage",
+                                "sensor.sungrow_mppt1_current",
+                                "sensor.mppt1_power"
+                            ]
+                        },
+                        {
+                            "type": "history-graph",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_battery_level"
+                                }
+                            ],
+                            "hours_to_show": 48,
+                            "refresh_interval": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

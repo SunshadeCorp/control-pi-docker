@@ -1,0 +1,141 @@
+{
+    "version": 1,
+    "key": "lovelace.lovelace_admin",
+    "data": {
+        "config": {
+            "title": "Admin",
+            "views": [
+                {
+                    "path": "default_view",
+                    "title": "Home",
+                    "cards": [
+                        {
+                            "type": "entities",
+                            "entities": [
+                                {
+                                    "entity": "switch.battery_precharge"
+                                },
+                                {
+                                    "entity": "switch.relay_1_battery"
+                                },
+                                {
+                                    "entity": "switch.relay_2_battery"
+                                },
+                                {
+                                    "entity": "switch.relay_3_precharge_battery"
+                                },
+                                {
+                                    "entity": "switch.relay_4_solar_1"
+                                },
+                                {
+                                    "entity": "switch.relay_5_solar_2"
+                                }
+                            ],
+                            "state_color": true,
+                            "show_header_toggle": false
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "binary_sensor.master_service"
+                                },
+                                {
+                                    "entity": "binary_sensor.relay_service"
+                                },
+                                {
+                                    "entity": "binary_sensor.can_service"
+                                },
+                                {
+                                    "entity": "binary_sensor.can_service_active"
+                                },
+                                {
+                                    "entity": "binary_sensor.modbus_service"
+                                }
+                            ],
+                            "show_name": true,
+                            "show_icon": true,
+                            "show_state": false,
+                            "columns": 3
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "binary_sensor.esp_module_4"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_3"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_2"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_1"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_8"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_7"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_6"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_5"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_12"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_11"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_10"
+                                },
+                                {
+                                    "entity": "binary_sensor.esp_module_9"
+                                }
+                            ],
+                            "show_icon": true,
+                            "state_color": true,
+                            "columns": 4,
+                            "show_name": true,
+                            "show_state": false
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_export_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_load_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_dc_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_active_power"
+                                }
+                            ],
+                            "show_icon": false
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "binary_sensor.kill_switch"
+                                }
+                            ],
+                            "show_name": true,
+                            "show_icon": true,
+                            "show_state": false
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

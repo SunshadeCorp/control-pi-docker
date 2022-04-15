@@ -23,8 +23,12 @@ services:
         depends_on:
             - mariadb
             - mosquitto
-        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2021.9.7" # 2021.9.5 2021.8.8
-        network_mode: host
+        image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:2022.2.5" # 2021.9.7
+        networks:
+            - mosquitto
+        ports:
+            - 80:8123
+            - 8123:8123
         privileged: true
         restart: unless-stopped
         volumes:
@@ -36,7 +40,7 @@ services:
         build:
             context: /docker/build/modbus4mqtt # https://github.com/SunshadeCorp/modbus4mqtt
             # network: host
-        command: --hostname mosquitto --username ${MQTT_USER} --password ${MQTT_PASSWORD} --config /modbus4mqtt/sungrow_sh10rt.yaml
+        command: --hostname mosquitto --username ${ENV_MQTT_USER} --password ${ENV_MQTT_PW} --config /modbus4mqtt/sungrow_sh10rt.yaml
         container_name: modbus4mqtt
         depends_on:
             - mosquitto
@@ -52,14 +56,16 @@ services:
     mariadb: # https://github.com/docker-library/official-images/blob/master/library/mariadb
         container_name: mariadb
         environment:
-            - TZ=Europe/Berlin
-            # - MYSQL_ROOT_PASSWORD
-            # - MYSQL_DATABASE
-            # - MYSQL_USER
-            # - MYSQL_PASSWORD
+            MYSQL_DATABASE: homeassistant
+            TZ: Europe/Berlin
+            MYSQL_ROOT_PASSWORD: $ENV_MARIADB_ROOT_PW
+            MYSQL_USER: $ENV_MARIADB_USER
+            MYSQL_PASSWORD: $ENV_MARIADB_PW
         image: ghcr.io/linuxserver/mariadb:version-10.5.12-r0 # 110.4.21mariabionic-ls31
+        networks:
+            - mosquitto
         ports:
-            - "127.0.0.1:3306:3306"
+            - 3306:3306
         restart: unless-stopped
         volumes:
             - /mnt/ssd/mariadb_data:/config
@@ -94,6 +100,9 @@ services:
             - mosquitto
         restart: unless-stopped
 
+networks:
+    mosquitto:
+
     # solariot:
     #     container_name: solariot
     #     image: meltaxa/solariot
@@ -114,20 +123,17 @@ services:
     #     volumes:
     #         - /docker/dhcpd:/data
 
-    bind9:
-        build:
-            context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
-        container_name: bind9
-        ports:
-            - "53:53/udp"
-            - "53:53/tcp"
-            - "127.0.0.1:953:953/tcp"
-        restart: unless-stopped
-        volumes:
-            - /docker/bind9/etc:/etc/bind
-            - /docker/bind9/cache:/var/cache/bind
-            - /docker/bind9/lib:/var/lib/bind
-            - /docker/bind9/log:/var/log
-
-networks:
-    mosquitto:
+    # bind9:
+    #     build:
+    #         context: /docker/build/bind9-docker # https://github.com/isc-projects/bind9-docker branch v9.11
+    #     container_name: bind9
+    #     ports:
+    #         - "53:53/udp"
+    #         - "53:53/tcp"
+    #         - "127.0.0.1:953:953/tcp"
+    #     restart: unless-stopped
+    #     volumes:
+    #         - /docker/bind9/etc:/etc/bind
+    #         - /docker/bind9/cache:/var/cache/bind
+    #         - /docker/bind9/lib:/var/lib/bind
+    #         - /docker/bind9/log:/var/log

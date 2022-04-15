@@ -1,0 +1,56 @@
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_api_key
+    allowed_chat_ids: !secret telegram_allowed_chat_ids
+    parse_mode: html
+
+notify:
+  - platform: telegram
+    name: telegram_chat
+    chat_id: !secret telegram_chat_id
+
+automation telegram:
+  - alias: "relay change"
+    trigger:
+      - platform: state
+        entity_id: switch.battery_precharge
+      - platform: state
+        entity_id: switch.relay_1_battery
+      - platform: state
+        entity_id: switch.relay_2_battery
+      - platform: state
+        entity_id: switch.relay_3_precharge_battery
+      - platform: state
+        entity_id: switch.relay_4_solar_1
+      - platform: state
+        entity_id: switch.relay_5_solar_2
+      - platform: state
+        entity_id: binary_sensor.kill_switch
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            <b><u>{{ trigger.to_state.name }}</u></b> is now <b><u>{{ trigger.to_state.state }}</u></b>
+  - alias: 'system status'
+    trigger:
+      platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/status"
+    action:
+      - service: notify.telegram_chat
+        data:
+          message: >
+            MPPT1 Power: {{ states('sensor.mppt1_power') }} W
+            
+            Battery SOC: {{ states('sensor.sungrow_battery_level') }} %
+            
+            Battery Power: {{ states('sensor.sungrow_battery_power') }} W
+
+            Load Power: {{ states('sensor.sungrow_load_power') }} W
+
+            Active Power: {{ states('sensor.sungrow_total_active_power') }} W
+
+            Export Power: {{ states('sensor.sungrow_export_power') }} W
+
+            PV Today: {{ states('sensor.sungrow_daily_pv_generation') }} kWh
