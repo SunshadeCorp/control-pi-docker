@@ -144,7 +144,7 @@ template:
       unique_id: 'tesla_card_grid_consumption'
       state: >
         {% set export_power = int(states('sensor.sungrow_export_power'), 0) %}
-        {{ -export_power if export_power < 0 else 0 }}"
+        {{ -export_power if export_power < 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
@@ -152,7 +152,7 @@ template:
       unique_id: 'tesla_card_grid_feed_in'
       state: > 
         {% set var = int(states('sensor.sungrow_export_power'), 0) %}
-        {{ var if var > 0 else 0 }}"
+        {{ var if var > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
