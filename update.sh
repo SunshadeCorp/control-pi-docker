@@ -2,7 +2,7 @@
 
 echo "Shutting down kioskapp."
 systemctl stop kioskapp
-docker-compose dow´n
+docker-compose down
 git pull
 cd /docker/build/easybms-master && git pull
 cd /docker/build/can-service && git pull

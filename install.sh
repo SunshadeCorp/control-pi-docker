@@ -33,10 +33,10 @@ if [[ ! $(whoami) == "root" ]]; then
 fi
 
 # Check SSH keys set up
-if [ ! -f ~/.ssh/id_rsa ]; then
-    echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
-    exit 2
-fi
+# if [ ! -f ~/.ssh/id_rsa ]; then
+#     echo "SSH keys not found. Please set up SSH keys before installing. Try 'ssh-keygen'."
+#     exit 2
+# fi
 
 # Check internet connection
 if ! ping -q -w 1 -c 1 github.com > /dev/null; then
@@ -191,15 +191,15 @@ apt-get install -y can-utils
 # Install docker-compose over pip
 pip3 install docker-compose
 
-# Install mosquitto to be able to use mosquitto_passwd on the host
-apt install -y mosquitto
-
 # Start containers on boot
 systemctl enable docker
 
 # Install requirements for kiosk mode
 apt-get install -y chromium-browser
 apt-get install -y unclutter
+
+# Install OpenVPN Client
+apt-get install -y openvpn unzip
 
 # Install BCM2835
 if [ -f /usr/local/include/bcm2835.h ]; then
@@ -256,9 +256,9 @@ systemctl enable kioskapp.service
 # Clone project repos
 git config pull.rebase false
 git clone https://github.com/SunshadeCorp/modbus4mqtt /docker/build/modbus4mqtt
-git clone git@github.com:SunshadeCorp/relay-control.git --branch next-gen /docker/build/relay-service 
-git clone git@github.com:SunshadeCorp/can-byd-raspi.git /docker/build/can-service
-git clone git@github.com:SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
+git clone https://github.com/SunshadeCorp/relay-service.git /docker/build/relay-service 
+git clone https://github.com/SunshadeCorp/can-service.git /docker/build/can-service
+git clone https://github.com/SunshadeCorp/EasyBMS-master.git /docker/build/easybms-master
 git clone https://github.com/isc-projects/bind9-docker --branch v9.11 /docker/build/bind9-docker
 
 # Copy mqtt credentials configuration file into the service directories
@@ -280,6 +280,9 @@ if [ -f "$MOSQ_PW_FILE" ]; then
     echo "Replacing ${MOSQ_PW_FILE}."
 fi
 
+# Install mosquitto to be able to use mosquitto_passwd on the host
+apt install -y mosquitto
+
 # Create mosquitto password file
 mosquitto_passwd -b -c $MOSQ_PW_FILE $ENV_MQTT_USER $ENV_MQTT_PW && \
 echo "Created ${MOSQ_PW_FILE}."
@@ -296,7 +299,7 @@ fi
 
 # Create baseline storage folder for homeassistant
 if [ ! -d /docker/homeassistant/.storage ]; then
-    cp -rv storage-template homeassistant/.storage
+    cp -rv /docker/homeassistant/storage-template /docker/homeassistant/.storage
 fi
 
 # Create secrets file for home assistant

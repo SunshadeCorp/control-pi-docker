@@ -1,0 +1,127 @@
+{
+    "version": 1,
+    "key": "lovelace.lovelace_solar",
+    "data": {
+        "config": {
+            "title": "Solar",
+            "views": [
+                {
+                    "path": "default_view",
+                    "title": "Home",
+                    "badges": [],
+                    "cards": [
+                        {
+                            "title": "Energieverteilung Heute",
+                            "type": "energy-distribution",
+                            "link_dashboard": false
+                        },
+                        {
+                            "type": "history-graph",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_load_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_export_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_dc_power"
+                                }
+                            ],
+                            "hours_to_show": 24,
+                            "refresh_interval": 0
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_load_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_dc_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_total_active_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_export_power"
+                                }
+                            ],
+                            "show_icon": false,
+                            "show_state": true,
+                            "show_name": true,
+                            "state_color": false,
+                            "columns": 2
+                        },
+                        {
+                            "type": "history-graph",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_mppt1_voltage"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_mppt2_voltage"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_voltage"
+                                }
+                            ],
+                            "hours_to_show": 24,
+                            "refresh_interval": 0
+                        },
+                        {
+                            "type": "entity",
+                            "entity": "sensor.system_state"
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                "binary_sensor.running_state_battery_charging",
+                                "binary_sensor.running_state_battery_discharging",
+                                "binary_sensor.running_state_feed_in_power",
+                                "binary_sensor.running_state_import_power_from_grid",
+                                "binary_sensor.running_state_negative_load_power",
+                                "binary_sensor.running_state_positive_load_power",
+                                "binary_sensor.running_state_pv_power"
+                            ],
+                            "state_color": true,
+                            "show_state": false,
+                            "show_icon": true,
+                            "show_name": true,
+                            "columns": 2
+                        },
+                        {
+                            "type": "glance",
+                            "entities": [
+                                {
+                                    "entity": "sensor.sungrow_battery_voltage"
+                                },
+                                {
+                                    "entity": "sensor.battery_current"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_power"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_temperature"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_capacity"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_level"
+                                },
+                                {
+                                    "entity": "sensor.sungrow_battery_state_of_health"
+                                }
+                            ],
+                            "state_color": true,
+                            "columns": 3,
+                            "title": "Batterie"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
