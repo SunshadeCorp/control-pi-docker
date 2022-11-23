@@ -166,7 +166,7 @@ if [ -d $MARIADB_DATA_DIR ]; then
 fi
 
 # Update packages
-apt-get update -y && apt-get upgrade -y
+apt-get update -y
 
 # Install docker
 if command_exists docker; then
