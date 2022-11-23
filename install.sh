@@ -188,8 +188,8 @@ pip3 install spidev
 pip3 install python-can
 apt-get install -y can-utils
 
-# Install docker-compose over pip
-pip3 install docker-compose
+# Install docker compose
+apt-get install -y docker-compose-plugin
 
 # Start containers on boot
 systemctl enable docker
