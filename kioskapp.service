@@ -1,0 +1,11 @@
+[Unit]
+Description=Homeassistant Kiosk App
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/docker/kioskapp.sh > /docker/kioskapp.log 2>&1
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

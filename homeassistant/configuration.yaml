@@ -1,6 +1,57 @@
-
 # Configure a default setup of Home Assistant (frontend, api, etc)
-default_config:
+#default_config:
+# info on default config:
+# https://github.com/home-assistant/core/blob/dev/homeassistant/components/default_config/manifest.json
+
+# Replicate default_config to disable some of the integrations
+#automation: (listed below)
+cloud:
+counter:
+dhcp:
+energy:
+#frontend: (listed below)
+history:
+input_boolean:
+input_button:
+input_datetime:
+input_number:
+input_select:
+input_text:
+logbook:
+#map: (not needed)
+#media_source: (not needed)
+mobile_app:
+my:
+network:
+person:
+#scene: (listed below)
+#script: (listed below)
+ssdp:
+sun:
+system_health:
+tag:
+timer:
+usb:
+#updater
+webhook:
+zeroconf:
+zone:
+
+homeassistant:
+  name: MEB Hauskraftwerk
+  currency: EUR
+  unit_system: metric
+  time_zone: "Europe/Berlin"
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - 172.0.0.0/8
+      allow_bypass_login: true
+    - type: homeassistant
+  
+# Import themes
+frontend:    
+  themes: !include_dir_merge_named themes
 
 # Text to speech
 tts:
@@ -10,67 +61,18 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+# telegram: !include telegram.yaml
+
+mqtt:
+  # certificate: "path/to/cert.crt"
+  broker: mosquitto
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
 
 recorder:
   db_url: !secret recorder_db_url
   # db_url: sqlite:////data/home-assistant_v2.db
-
-telegram_bot:
-  - platform: polling
-    api_key: !secret telegram_api_key
-    allowed_chat_ids: !secret telegram_allowed_chat_ids
-    parse_mode: html
-
-notify:
-  - platform: telegram
-    name: telegram_chat
-    chat_id: !secret telegram_chat_id
-
-automation telegram:
-  - alias: "relay change"
-    trigger:
-      - platform: state
-        entity_id: switch.battery_precharge
-      - platform: state
-        entity_id: switch.relay_1_battery
-      - platform: state
-        entity_id: switch.relay_2_battery
-      - platform: state
-        entity_id: switch.relay_3_precharge_battery
-      - platform: state
-        entity_id: switch.relay_4_solar_1
-      - platform: state
-        entity_id: switch.relay_5_solar_2
-      - platform: state
-        entity_id: binary_sensor.kill_switch
-    action:
-      - service: notify.telegram_chat
-        data:
-          message: >
-            <b><u>{{ trigger.to_state.name }}</u></b> is now <b><u>{{ trigger.to_state.state }}</u></b>
-  - alias: 'system status'
-    trigger:
-      platform: event
-      event_type: telegram_command
-      event_data:
-        command: "/status"
-    action:
-      - service: notify.telegram_chat
-        data:
-          message: >
-            MPPT1 Power: {{ states('sensor.mppt1_power') }} W
-            
-            Battery SOC: {{ states('sensor.sungrow_battery_level') }} %
-            
-            Battery Power: {{ states('sensor.sungrow_battery_power') }} W
-
-            Load Power: {{ states('sensor.sungrow_load_power') }} W
-
-            Active Power: {{ states('sensor.sungrow_total_active_power') }} W
-
-            Export Power: {{ states('sensor.sungrow_export_power') }} W
-
-            PV Today: {{ states('sensor.sungrow_daily_pv_generation') }} kWh
 
 binary_sensor services:
   - name: Can Service Active
@@ -112,14 +114,14 @@ binary_sensor kill_switch:
     state_topic: master/relays/kill_switch
     unique_id: relay.kill_switch
 
-switch precharge:
-  - command_topic: master/relays/perform_precharge
-    name: Battery Precharge
-    platform: mqtt
-    state_off: 'off'
-    state_on: 'on'
-    state_topic: master/relays/2
-    unique_id: relay.battery_precharge
+# switch precharge:
+#  - command_topic: master/relays/perform_precharge
+#    name: Battery Precharge
+#    platform: mqtt
+#    state_off: 'off'
+#    state_on: 'on'
+#    state_topic: master/relays/2
+#    unique_id: relay.battery_precharge
 
 sensor master:
   - device_class: power
@@ -140,13 +142,17 @@ template:
   - sensor:
     - name: "Tesla Card Grid Consumption"
       unique_id: 'tesla_card_grid_consumption'
-      state: "{{ states('sensor.sungrow_export_power') | int | min(0) | abs }}"
+      state: >
+        {% set export_power = int(states('sensor.sungrow_export_power'), 0) %}
+        {{ -export_power if export_power < 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Grid Feed In"
       unique_id: 'tesla_card_grid_feed_in'
-      state: "{{ states('sensor.sungrow_export_power') | int | max(0) }}"
+      state: > 
+        {% set var = int(states('sensor.sungrow_export_power'), 0) %}
+        {{ var if var > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
@@ -154,7 +160,7 @@ template:
       unique_id: 'tesla_card_battery_consumption'
       state: >
         {% if is_state('binary_sensor.running_state_battery_discharging', 'on') %}
-          {{ states('sensor.sungrow_battery_power') | int }}
+          {{ states('sensor.sungrow_battery_power') | int(default=0) }}
         {% else %}
           0
         {% endif %}
@@ -165,7 +171,7 @@ template:
       unique_id: 'tesla_card_battery_charging_power'
       state: >
         {% if is_state('binary_sensor.running_state_battery_charging', 'on') %}
-          {{ states('sensor.sungrow_battery_power') | int }}
+          {{ states('sensor.sungrow_battery_power') | int(default=0) }}
         {% else %}
           0
         {% endif %}
@@ -175,69 +181,81 @@ template:
     - name: "Tesla Card Grid To House"
       unique_id: 'tesla_card_grid_to_house'
       state: >
-        {{ (
-          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_total_active_power') | int | min(0) | abs )
-        ) | max(0) }}
+        {% set grid_consumption = int(states('sensor.tesla_card_grid_consumption'), 0) %}
+        {% set active_power = int(states('sensor.sungrow_total_active_power'), 0) %}
+        {% set grid_to_house = grid_consumption - active_power %}
+        {{ -grid_to_house if grid_to_house < 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Grid To Battery"
       unique_id: 'tesla_card_grid_to_battery'
       state: >
-        {{ (
-          (states('sensor.tesla_card_grid_consumption') | int) - (states('sensor.sungrow_load_power') | int)
-        ) | max(0) }}
+         {% set grid_consumption = int(states('sensor.tesla_card_grid_consumption'), 0) %}
+         {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+         {% set grid_to_battery =  grid_consumption - load_power %}
+         {{ grid_to_battery if grid_to_battery > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To Grid"
       unique_id: 'tesla_card_generation_to_grid'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int)
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set battery_charging_power = int(states('sensor.tesla_card_battery_charging_power'), 0) %}
+        {% set generation_to_grid = total_dc_power - load_power - battery_charging_power %}
+        {{ generation_to_grid if generation_to_grid > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To Battery"
       unique_id: 'tesla_card_generation_to_battery'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.sungrow_load_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set generation_to_battery = total_dc_power - load_power - grid_feed_in %}
+        {{ generation_to_battery if generation_to_battery > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Generation To House"
       unique_id: 'tesla_card_generation_to_house'
       state: >
-        {{ (
-          (states('sensor.sungrow_total_dc_power') | int) - (states('sensor.tesla_card_battery_charging_power') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
-        ) | max(0) }}
+        {% set total_dc_power = int(states('sensor.sungrow_total_dc_power'), 0) %}
+        {% set battery_charging_power = int(states('sensor.tesla_card_battery_charging_power'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set generation_to_house = total_dc_power - battery_charging_power - grid_feed_in %}
+        {{ generation_to_house if generation_to_house > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Battery To House"
       unique_id: 'tesla_card_battery_to_house'
       state: >
-        {{ (
-          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.tesla_card_grid_feed_in') | int)
-        ) | max(0) }}
+        {% set battery_consumption = int(states('sensor.tesla_card_battery_consumption'), 0) %}
+        {% set grid_feed_in = int(states('sensor.tesla_card_grid_feed_in'), 0) %}
+        {% set battery_to_house = battery_consumption - grid_feed_in %}
+        {{ battery_to_house if battery_to_house > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: "Tesla Card Battery To Grid"
       unique_id: 'tesla_card_battery_to_grid'
       state: >
-        {{ (
-          (states('sensor.tesla_card_battery_consumption') | int) - (states('sensor.sungrow_load_power') | int)
-        ) | max(0) }}
+        {% set battery_consumption = int(states('sensor.tesla_card_battery_consumption'), 0) %}
+        {% set load_power = int(states('sensor.sungrow_load_power'), 0) %}
+        {% set battery_to_grid = battery_consumption - load_power %}
+        {{ battery_to_grid if battery_to_grid > 0 else 0 }}
       device_class: power
       unit_of_measurement: W
 
     - name: MPPT1 Power
       unique_id: mppt1_power
       state: >
-        {{ (states('sensor.sungrow_mppt1_current') | float) * (states('sensor.sungrow_mppt1_voltage') | float) | round }}
+        {% set mppt1_current = float(states('sensor.sungrow_mppt1_current'), 0.0) %}
+        {% set mppt1_voltage = float(states('sensor.sungrow_mppt1_voltage'), 0.0) %}
+        {{ mppt1_current * mppt1_voltage | float(default=0.0) | round }}
       device_class: power
       unit_of_measurement: W
